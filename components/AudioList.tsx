@@ -20,20 +20,16 @@ import { formatDuration } from '@/helpers/utils';
 import { useRouter } from 'expo-router';
 import { fetchAudioFiles } from '@/helpers/fetch';
 import {Audio} from 'expo-av';
+import AudioPlayer from './AudioPlayer';
 const { width } = Dimensions.get('window');
 
 export const AudioListScreen = () => {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
 ;  const router=useRouter();
   useEffect(() => {
     requestPermission();
-    return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
-    };
   }, []);
 
   const requestPermission = async () => {
@@ -49,18 +45,6 @@ export const AudioListScreen = () => {
       fetchAudioFiles().then(setAudioFiles);
       
     }
-  };
-
-  const playAudio = async (uri: string) => {
-    if (sound) {
-      await sound.unloadAsync();
-    }
-
-    const { sound: newSound } = await Audio.Sound.createAsync(
-      { uri },
-      { shouldPlay: true}
-    );
-    setSound(newSound);
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
@@ -100,12 +84,7 @@ export const AudioListScreen = () => {
           </Text>
           <Text>{item.albumId}</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => playAudio(item.uri)}>
-            <View style={styles.iconContainer}>
-              <PlayIcon size={24} color="#6366f1" />
-            </View>
-        </TouchableOpacity>
+        <AudioPlayer uri={item.uri} /> 
       </TouchableOpacity>
     </Animated.View>
   );
