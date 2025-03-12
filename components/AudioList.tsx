@@ -19,12 +19,15 @@ import Animated, {
 import { formatDuration } from '@/helpers/utils';
 import { useRouter } from 'expo-router';
 import { fetchAudioFiles } from '@/helpers/fetch';
+import {Audio} from 'expo-av';
+import AudioPlayer from './AudioPlayer';
 const { width } = Dimensions.get('window');
 
 export const AudioListScreen = () => {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
-  const router=useRouter();
+
+;  const router=useRouter();
   useEffect(() => {
     requestPermission();
   }, []);
@@ -81,12 +84,7 @@ export const AudioListScreen = () => {
           </Text>
           <Text>{item.albumId}</Text>
         </View>
-        <TouchableOpacity
-          onPress={() => console.log('Play audio:', item.filename) /* here to play the audio*/}>
-            <View style={styles.iconContainer}>
-              <PlayIcon size={24} color="#6366f1" />
-            </View>
-        </TouchableOpacity>
+        <AudioPlayer uri={item.uri} /> 
       </TouchableOpacity>
     </Animated.View>
   );
