@@ -10,19 +10,21 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
-import { Music2, AlertCircle } from 'lucide-react-native';
+import { Music2, AlertCircle ,PlayIcon} from 'lucide-react-native';
 import Animated, {
   FadeInUp,
   FadeOut,
   Layout,
 } from 'react-native-reanimated';
-
+import { formatDuration } from '@/helpers/utils';
+import { useRouter } from 'expo-router';
+import { fetchAudioFiles } from '@/helpers/fetch';
 const { width } = Dimensions.get('window');
 
 export const AudioListScreen = () => {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
-
+  const router=useRouter();
   useEffect(() => {
     requestPermission();
   }, []);
@@ -37,23 +39,9 @@ export const AudioListScreen = () => {
     setPermissionStatus(status);
     
     if (status === 'granted') {
-      fetchAudioFiles();
+      fetchAudioFiles().then(setAudioFiles);
+      
     }
-  };
-
-  const fetchAudioFiles = async () => {
-    const media = await MediaLibrary.getAssetsAsync({
-      mediaType: MediaLibrary.MediaType.audio,
-      first: 300,
-    });
-
-    setAudioFiles(media.assets);
-  };
-
-  const formatDuration = (duration: number) => {
-    const minutes = Math.floor(duration / 60);
-    const seconds = Math.floor(duration % 60);
-    return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
@@ -64,7 +52,22 @@ export const AudioListScreen = () => {
     >
       <TouchableOpacity
         style={styles.audioItem}
-        onPress={() => console.log('Audio selected:', item.filename)}
+        
+        onPress={() => 
+          
+          router.push({
+       pathname: "/(details)/[slug]",  
+        params: { 
+           slug: item.id,
+          details: JSON.stringify({
+            filename: item.filename,
+            duration: item.duration,
+            albumId: item.albumId,
+            uri: item.uri,
+          }),
+    },
+  })
+        }
       >
         <View style={styles.iconContainer}>
         {  <Music2 size={24} color="#6366f1" />} 
@@ -76,7 +79,14 @@ export const AudioListScreen = () => {
           <Text style={styles.duration}>
             {formatDuration(item.duration)}
           </Text>
+          <Text>{item.albumId}</Text>
         </View>
+        <TouchableOpacity
+          onPress={() => console.log('Play audio:', item.filename) /* here to play the audio*/}>
+            <View style={styles.iconContainer}>
+              <PlayIcon size={24} color="#6366f1" />
+            </View>
+        </TouchableOpacity>
       </TouchableOpacity>
     </Animated.View>
   );
