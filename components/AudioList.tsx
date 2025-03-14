@@ -22,13 +22,17 @@ import { fetchAudioFiles } from '@/helpers/fetch';
 import {Audio} from 'expo-av';
 import AudioPlayer from './AudioPlayer';
 import BackgroundAudioPlayer from './BackgroundPlay';
+import useAudioStore from '@/store/AudioStore';
 const { width } = Dimensions.get('window');
 
 export const AudioListScreen = () => {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
 
-;  const router=useRouter();
+;  
+  const router=useRouter();
+  const { loadAudio } = useAudioStore();
+
   useEffect(() => {
     requestPermission();
   }, []);
@@ -57,21 +61,21 @@ export const AudioListScreen = () => {
       <TouchableOpacity
         style={styles.audioItem}
         
-        onPress={() => 
-          
+        onPress={() => {
+          loadAudio(item.uri, item.filename);
           router.push({
-       pathname: "/(details)/[slug]",  
-        params: { 
-           slug: item.id,
-          details: JSON.stringify({
-            filename: item.filename,
-            duration: item.duration,
-            albumId: item.albumId,
-            uri: item.uri,
+            pathname: "/(details)/[slug]",  
+            params: { 
+            slug: item.id,
+            details: JSON.stringify({
+              filename: item.filename,
+              duration: item.duration,
+              albumId: item.albumId,
+              uri: item.uri,
           }),
     },
-  })
-        }
+  });
+        }}
       >
         <View style={styles.iconContainer}>
         {  <Music2 size={24} color="#6366f1" />} 
@@ -85,7 +89,7 @@ export const AudioListScreen = () => {
           </Text>
           <Text>{item.albumId}</Text>
         </View>
-        <AudioPlayer uri={item.uri} /> 
+        <AudioPlayer uri={item.uri} currentTitle={item.filename} /> 
       </TouchableOpacity>
     </Animated.View>
   );
@@ -150,7 +154,7 @@ export const AudioListScreen = () => {
         />
       )}
 
-      <BackgroundAudioPlayer uri={audioFiles[0]?.uri}/>
+      <BackgroundAudioPlayer />
     </SafeAreaView>
   );
 };
