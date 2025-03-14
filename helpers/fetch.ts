@@ -2,7 +2,7 @@ import * as MediaLibrary from 'expo-media-library';
 export const fetchAudioFiles = async () => {
     const media = await MediaLibrary.getAssetsAsync({
       mediaType: MediaLibrary.MediaType.audio,
-      first: 1000,
+      first: 10,
 
       
     });

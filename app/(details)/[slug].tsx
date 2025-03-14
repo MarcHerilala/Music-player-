@@ -2,20 +2,13 @@ import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import AudioPlayer from "@/components/AudioPlayer";
 
 export default function AudioDetailsScreen() {
   const { slug, details } = useLocalSearchParams();
 
   const audio = details && typeof details === 'string' ? JSON.parse(details) : null;
 
-  const playAudio = () => {
-    // logic of plauing the audio
-  };
-
-  const pauseAudio = () => {
-    console.log('Pause audio:', audio?.filename);
-    //pause audio
-  };
 
   return (
     <View style={styles.container}>
@@ -27,13 +20,7 @@ export default function AudioDetailsScreen() {
       </View>
 
       <View style={styles.controls}>
-        <TouchableOpacity onPress={playAudio} style={styles.controlButton}>
-          <MaterialIcons name="play-arrow" size={40} color="white" />
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={pauseAudio} style={styles.controlButton}>
-          <MaterialIcons name="pause" size={40} color="white" />
-        </TouchableOpacity>
+        <AudioPlayer uri={audio?.uri} />
       </View>
 
       <View style={styles.details}>

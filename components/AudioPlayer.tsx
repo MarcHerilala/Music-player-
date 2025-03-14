@@ -1,52 +1,34 @@
 import React, { useEffect, useState} from "react";
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { PlayIcon, PauseIcon} from 'lucide-react-native';
-import { Audio } from "expo-av";
+import { PlayIcon, PauseIcon } from 'lucide-react-native';
+import useAudioStore from '@/store/AudioStore';
 
-interface AudioPlayerProps{
+interface AudioPlayerProps {
     uri: string;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ( { uri }) => {
-    const [sound, setSound] = useState<Audio.Sound | null>(null);
-    const [isPlaying, setIsPlaying] = useState(false);
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri }) => {
+    const {currentUri, sound, isPlaying, loadAudio, playAudio, pauseAudio } = useAudioStore();
 
     useEffect(() => {
-        const loadAudio = async () => {
-            const { sound: newSound } = await Audio.Sound.createAsync(
-                { uri },
-                { shouldPlay: false}
-            );
-            setSound(newSound);
-        };
-
-        loadAudio();
-
-        return () => {
-            if (sound) {
-                sound.unloadAsync();
-            }
-        };
+        loadAudio(uri);
     }, [uri]);
 
-    const handlePlayPause = async () => {
-        if (sound) {
-            if (isPlaying) {
-                await sound.pauseAsync();
-            } else {
-                await sound.playAsync();
-            }
-            setIsPlaying(!isPlaying);
-        }
-    };
+   const handlePlayPause = async () => {
+    if (currentUri !== uri) {
+        await loadAudio(uri);
+    }
+    isPlaying ? await pauseAudio() : await playAudio();
+};
+
 
     return (
         <View style={styles.container}>
-          <TouchableOpacity onPress={handlePlayPause} style={styles.button}>
-            {isPlaying ? <PauseIcon size={32} color="#6366f1" /> : <PlayIcon size={32} color="#6366f1" />}
-          </TouchableOpacity>
+            <TouchableOpacity onPress={handlePlayPause} style={styles.button} disabled={!sound}>
+                {isPlaying &&currentUri==uri? <PauseIcon size={32} color="#6366f1" /> : <PlayIcon size={32} color="#6366f1" />}
+            </TouchableOpacity>
         </View>
-      );
+    );
 };
 
 const styles = StyleSheet.create({
@@ -57,7 +39,7 @@ const styles = StyleSheet.create({
     },
     button: {
         marginHorizontal: 10,
-    }
+    },
 });
 
 export default AudioPlayer;
