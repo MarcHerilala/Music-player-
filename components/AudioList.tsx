@@ -22,17 +22,14 @@ import { fetchAudioFiles } from '@/helpers/fetch';
 import {Audio} from 'expo-av';
 import AudioPlayer from './AudioPlayer';
 import BackgroundAudioPlayer from './BackgroundPlay';
-import useAudioStore from '@/store/AudioStore';
 const { width } = Dimensions.get('window');
+import AudioItem from './AudioItem';
 
 export const AudioListScreen = () => {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
 
-;  
-  const router=useRouter();
-  const { loadAudio, currentUri } = useAudioStore();
-
+;  const router=useRouter();
   useEffect(() => {
     requestPermission();
   }, []);
@@ -53,45 +50,7 @@ export const AudioListScreen = () => {
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
-    <Animated.View
-      entering={FadeInUp.delay(index * 100)}
-      exiting={FadeOut}
-      layout={Layout.springify()}
-    >
-      <TouchableOpacity
-        style={styles.audioItem}
-        
-        onPress={() => {
-          loadAudio(item.uri, item.filename);
-          router.push({
-            pathname: "/(details)/[slug]",  
-            params: { 
-            slug: item.id,
-            details: JSON.stringify({
-              filename: item.filename,
-              duration: item.duration,
-              albumId: item.albumId,
-              uri: item.uri,
-          }),
-    },
-  });
-        }}
-      >
-        <View style={styles.iconContainer}>
-        {  <Music2 size={24} color="#6366f1" />} 
-        </View>
-        <View style={styles.audioInfo}>
-          <Text style={styles.fileName} numberOfLines={1}>
-            {item.filename}
-          </Text>
-          <Text style={styles.duration}>
-            {formatDuration(item.duration)}
-          </Text>
-          <Text>{item.albumId}</Text>
-        </View>
-        <AudioPlayer uri={item.uri} currentTitle={item.filename}/> 
-      </TouchableOpacity>
-    </Animated.View>
+   <AudioItem index={index} item={item}/>
   );
 
   const renderEmptyState = () => (
@@ -133,7 +92,7 @@ export const AudioListScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Audio Library test</Text>
+        <Text style={styles.title}>Audio Library</Text>
         {permissionStatus === 'granted' && (
           <Text style={styles.subtitle}>
             {audioFiles.length} audio files found

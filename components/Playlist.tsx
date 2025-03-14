@@ -3,10 +3,11 @@ import { View, Text, TextInput, FlatList, StyleSheet, Pressable } from 'react-na
 import { PlayListCreateModal } from './PlayListModal';
 import { PlayCircle, Music2, MoreVertical, Plus } from 'lucide-react-native';
 import usePlaylistStore from '@/store/PlayListStore';
+import { useRouter } from 'expo-router';
 
 export const PlaylistScreen = () => {
   const {loadPlaylists,playlists}=usePlaylistStore();
-  
+  const router=useRouter() 
 
   useEffect(() => {
     loadPlaylists()
@@ -14,7 +15,7 @@ export const PlaylistScreen = () => {
 
 
   const renderPlaylistItem = ({ item }: { item: Playlist }) => (
-    <Pressable style={styles.playlistItem}>
+    <Pressable style={styles.playlistItem} onPress={()=>router.push(`/playlist/track/${item.id}`)}>
       <View style={styles.playlistIconContainer}>
         <Music2 size={24} color="#6366f1" />
       </View>

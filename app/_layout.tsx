@@ -1,10 +1,25 @@
-import { Drawer } from "expo-router/drawer";
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 
-export default function Layout() {
+
+export default function RootLayout() {
+
+
   return (
-    <Drawer>
-      <Drawer.Screen name="index" options={{ title: "home" }} />
-      <Drawer.Screen name="playlist/index" options={{ title: "Playlist" }} />
-    </Drawer>
+    <>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+        <Stack.Screen 
+          name="details" 
+          options={{
+            headerShown: true,
+            headerTitle: "Details",
+            presentation: 'card',
+          }} 
+        />
+        <Stack.Screen name="+not-found" />
+      </Stack>
+      <StatusBar style="auto" />
+    </>
   );
 }
