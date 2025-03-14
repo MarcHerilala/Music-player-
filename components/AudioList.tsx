@@ -31,7 +31,7 @@ export const AudioListScreen = () => {
 
 ;  
   const router=useRouter();
-  const { loadAudio } = useAudioStore();
+  const { loadAudio, currentUri } = useAudioStore();
 
   useEffect(() => {
     requestPermission();
@@ -89,7 +89,7 @@ export const AudioListScreen = () => {
           </Text>
           <Text>{item.albumId}</Text>
         </View>
-        <AudioPlayer uri={item.uri} currentTitle={item.filename} /> 
+        <AudioPlayer uri={item.uri} currentTitle={item.filename}/> 
       </TouchableOpacity>
     </Animated.View>
   );

@@ -38,7 +38,7 @@ export const showNotification = async (title: string, isPlaying: boolean) => {
     
     await Notifications.scheduleNotificationAsync({
         content: {
-            title: isPlaying ? "playing : " + title: "pause : " + title,
+            title: isPlaying ? "playing : " + title: "paused : " + title,
             sound: false,
             priority: Notifications.AndroidNotificationPriority.HIGH, 
             vibrate: [0, 250, 250, 250],
@@ -56,13 +56,15 @@ export const updateNotification = async (title: string, isPlaying: boolean) => {
     await showNotification(title, isPlaying);
 };
 
-export const handleNotificationAction = (action: string, playAudio: () => void, pauseAudio: () => void, stopAudio: () => void) => {
+export const handleNotificationAction = async (action: string, playAudio: () => Promise<void>, pauseAudio: () => Promise<void>, stopAudio: () => Promise<void>, currentTitle: string) => {
     if (action === 'play') {
         playAudio();
+        await updateNotification(currentTitle, true);
     } else if (action === 'pause') {
         pauseAudio();
+        await updateNotification(currentTitle, false);
     } else if (action === 'stop') {
         stopAudio();
-        Notifications.dismissAllNotificationsAsync();
+        await Notifications.dismissAllNotificationsAsync();
     }
 }
