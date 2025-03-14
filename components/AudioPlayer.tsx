@@ -2,6 +2,7 @@ import React, { useEffect, useState} from "react";
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { PlayIcon, PauseIcon } from 'lucide-react-native';
 import useAudioStore from '@/store/AudioStore';
+import { updateNotification } from "@/services/NotificationService";
 
 interface AudioPlayerProps {
     uri: string;
@@ -13,7 +14,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
 
     useEffect(() => {
         loadAudio(uri, currentTitle);
-    }, [uri]);
+    }, [uri, currentTitle]);
 
    const handlePlayPause = async () => {
     if (currentUri !== uri) {
@@ -22,9 +23,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
         }
         await loadAudio(uri, currentTitle);
         await playAudio(); 
+        updateNotification(currentTitle, true)
     } else {
-        
-        isPlaying ? await pauseAudio() : await playAudio();
+        if (isPlaying){
+            await pauseAudio();
+            updateNotification(currentTitle, false);
+        } else {
+            await playAudio();
+            updateNotification(currentTitle, true);
+        }
     }
 };
 
