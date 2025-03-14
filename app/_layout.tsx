@@ -4,7 +4,7 @@ export default function Layout() {
   return (
     <Drawer>
       <Drawer.Screen name="index" options={{ title: "home" }} />
-      <Drawer.Screen name="playlist" options={{ title: "Profile" }} />
+      <Drawer.Screen name="playlist/index" options={{ title: "Playlist" }} />
     </Drawer>
   );
 }

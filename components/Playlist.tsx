@@ -1,47 +1,115 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, FlatList } from 'react-native';
-import { loadPlaylists,savePlaylists } from '@/services/PlayListService';
+import { View, Text, TextInput, FlatList, StyleSheet, Pressable } from 'react-native';
+import { PlayListCreateModal } from './PlayListModal';
+import { PlayCircle, Music2, MoreVertical, Plus } from 'lucide-react-native';
+import usePlaylistStore from '@/store/PlayListStore';
 
-const PlaylistScreen = () => {
-  const [playlists, setPlaylists] = useState<Playlist[]>([]);
-  const [newPlaylistName, setNewPlaylistName] = useState('');
+export const PlaylistScreen = () => {
+  const {loadPlaylists,playlists}=usePlaylistStore();
+  
 
   useEffect(() => {
-    loadPlaylists().then(setPlaylists);
+    loadPlaylists()
   }, []);
 
-  const addPlaylist = () => {
-    if (newPlaylistName.trim() === '') return;
 
-    const newPlaylist: Playlist = {
-      id: Date.now().toString(),
-      name: newPlaylistName,
-      tracks: [],
-    };
-
-    const updatedPlaylists = [...playlists, newPlaylist];
-    setPlaylists(updatedPlaylists);
-    savePlaylists(updatedPlaylists);
-    setNewPlaylistName('');
-  };
+  const renderPlaylistItem = ({ item }: { item: Playlist }) => (
+    <Pressable style={styles.playlistItem}>
+      <View style={styles.playlistIconContainer}>
+        <Music2 size={24} color="#6366f1" />
+      </View>
+      <View style={styles.playlistInfo}>
+        <Text style={styles.playlistName}>{item.name}</Text>
+        <Text style={styles.trackCount}>{item.tracks.length} tracks</Text>
+      </View>
+     
+    </Pressable>
+  );
 
   return (
-    <View>
-      <Text>Playlists</Text>
-      <TextInput
-        placeholder="Nom de la playlist"
-        value={newPlaylistName}
-        onChangeText={setNewPlaylistName}
-      />
-      <Button title="Créer Playlist" onPress={addPlaylist} />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Your Playlists</Text>
+       
+        <PlayListCreateModal />
+      </View>
       
+        
       <FlatList
         data={playlists}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text>{item.name}</Text>}
+        renderItem={renderPlaylistItem}
+        contentContainerStyle={styles.listContainer}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
 };
 
-export default PlaylistScreen;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    paddingTop: 16,
+  },
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+  },
+  
+  listContainer: {
+    padding: 16,
+  },
+  playlistItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#ffffff',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
+  },
+  playlistIconContainer: {
+    width: 48,
+    height: 48,
+    backgroundColor: '#f1f5f9',
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  playlistInfo: {
+    flex: 1,
+    marginLeft: 16,
+  },
+  playlistName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  trackCount: {
+    fontSize: 14,
+    color: '#64748b',
+    marginTop: 4,
+  },
+  playlistActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  }
+}
+)
+  
