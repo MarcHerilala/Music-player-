@@ -5,7 +5,8 @@ interface AudioState {
   sound: Audio.Sound | null;
   isPlaying: boolean;
   currentUri: string | null;
-  loadAudio: (uri: string) => Promise<void>;
+  currentTitle: string | null;
+  loadAudio: (uri: string, title: string) => Promise<void>;
   playAudio: () => Promise<void>;
   pauseAudio: () => Promise<void>;
   stopAudio: () => Promise<void>;
@@ -15,8 +16,9 @@ const useAudioStore = create<AudioState>((set, get) => ({
   sound: null,
   isPlaying: false,
   currentUri: null,
+  currentTitle: null,
 
-  loadAudio: async (uri: string) => {
+  loadAudio: async (uri: string, title: string) => {
     const { sound, currentUri, isPlaying } = get();
 
     if (sound && uri !== currentUri) {
@@ -30,7 +32,7 @@ const useAudioStore = create<AudioState>((set, get) => ({
         { shouldPlay: false }
       );
 
-      set({ sound: newSound, currentUri: uri, isPlaying: false });
+      set({ sound: newSound, currentUri: uri,currentTitle: title, isPlaying: false });
     }
   },
 
@@ -57,7 +59,7 @@ const useAudioStore = create<AudioState>((set, get) => ({
     if (sound) {
       await sound.stopAsync();
       await sound.unloadAsync();
-      set({ sound: null, isPlaying: false, currentUri: null });
+      set({ sound: null, isPlaying: false, currentUri: null, currentTitle: null });
     }
   }
 }));
