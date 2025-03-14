@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Audio } from "expo-av";
 import * as TaskManager from "expo-task-manager";
 import * as BackgroundFetch from "expo-background-fetch";
-import { showNotification, updateNotification, handleNotificationAction } from "@/services/NotificationService";
+import { handleNotificationAction } from "@/services/NotificationService";
 import useAudioStore from "@/store/AudioStore";
 import { addNotificationResponseReceivedListener, dismissAllNotificationsAsync, dismissNotificationAsync } from "expo-notifications";
 
@@ -14,7 +14,7 @@ TaskManager.defineTask(BACKGROUND_AUDIO_TASK, async () => {
 });
 
 const BackgroundAudioPlayer: React.FC = () => {
-    const { sound, isPlaying, currentTitle, playAudio, pauseAudio, stopAudio } = useAudioStore();
+    const { playAudio, pauseAudio, stopAudio, currentTitle } = useAudioStore();
 
     useEffect(() => {
         const configureAudio = async() => {
@@ -41,21 +41,20 @@ const BackgroundAudioPlayer: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        if (currentTitle) {
-            updateNotification(currentTitle, isPlaying);
-        }
-    }, [isPlaying, currentTitle]);
-
-    useEffect(() => {
         const subscription = addNotificationResponseReceivedListener((response) => {
             const action = response.actionIdentifier;
-            handleNotificationAction(action, playAudio, pauseAudio, stopAudio);
+            if(currentTitle) {
+                handleNotificationAction(action, playAudio, pauseAudio, stopAudio, currentTitle);
+            } else {
+                console.warn('CurrentTitle is null. Cannot handle notification action.');
+                
+            }
         });
 
         return () => {
             subscription.remove();
         };
-    }, [playAudio, pauseAudio]);
+    }, [playAudio, pauseAudio, stopAudio, currentTitle]);
 
     return null;
 }
