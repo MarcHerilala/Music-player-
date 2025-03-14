@@ -21,6 +21,7 @@ import { useRouter } from 'expo-router';
 import { fetchAudioFiles } from '@/helpers/fetch';
 import {Audio} from 'expo-av';
 import AudioPlayer from './AudioPlayer';
+import BackgroundAudioPlayer from './BackgroundPlay';
 const { width } = Dimensions.get('window');
 
 export const AudioListScreen = () => {
@@ -148,6 +149,8 @@ export const AudioListScreen = () => {
           showsVerticalScrollIndicator={false}
         />
       )}
+
+      <BackgroundAudioPlayer uri={audioFiles[0]?.uri}/>
     </SafeAreaView>
   );
 };
