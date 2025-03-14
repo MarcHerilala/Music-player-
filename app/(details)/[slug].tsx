@@ -20,7 +20,7 @@ export default function AudioDetailsScreen() {
       </View>
 
       <View style={styles.controls}>
-        <AudioPlayer uri={audio?.uri} />
+        <AudioPlayer uri={audio?.uri} currentTitle={audio.title} key={audio.uri} />
       </View>
 
       <View style={styles.details}>

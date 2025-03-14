@@ -47,7 +47,7 @@ const BackgroundAudioPlayer: React.FC = () => {
     }, [isPlaying, currentTitle]);
 
     useEffect(() => {
-        const subscription = addNotificationResponseReceivedListener((response) => {
+        const subscription = addNotificationResponseReceivedListener((response: { actionIdentifier: any; }) => {
             const action = response.actionIdentifier;
             handleNotificationAction(action, playAudio, pauseAudio, stopAudio);
         });
