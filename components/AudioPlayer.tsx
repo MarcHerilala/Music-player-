@@ -16,9 +16,15 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri }) => {
 
    const handlePlayPause = async () => {
     if (currentUri !== uri) {
+        if (isPlaying) {
+            await pauseAudio();
+        }
         await loadAudio(uri);
+        await playAudio(); 
+    } else {
+        
+        isPlaying ? await pauseAudio() : await playAudio();
     }
-    isPlaying ? await pauseAudio() : await playAudio();
 };
 
 
