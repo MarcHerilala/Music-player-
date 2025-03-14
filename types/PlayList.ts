@@ -6,6 +6,7 @@ type Playlist = {
 
 type Track = {
   id: string;
-  title: string;
+  filename: string;
   uri: string;
+  duration:number;
 };

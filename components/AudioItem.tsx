@@ -8,7 +8,7 @@ import { formatDuration } from '@/helpers/utils';
 import * as MediaLibrary  from 'expo-media-library';
 
 type AudioItemProps = {
-  item: MediaLibrary.Asset;
+  item: Track;
   index: number;
 };
 
@@ -23,7 +23,6 @@ const AudioItem = ({ item, index }: AudioItemProps) => {
         details: JSON.stringify({
           filename: item.filename,
           duration: item.duration,
-          albumId: item.albumId,
           uri: item.uri,
         }),
       },
@@ -40,7 +39,6 @@ const AudioItem = ({ item, index }: AudioItemProps) => {
           {item.filename}
         </Text>
         <Text style={styles.duration}>{formatDuration(item.duration)}</Text>
-        <Text>{item.albumId}</Text>
       </View>
       <AudioPlayer uri={item.uri} currentTitle={item.filename} />
     </TouchableOpacity>

@@ -1,19 +1,8 @@
 import { useLocalSearchParams, router } from "expo-router";
 import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
 import { Plus, Music2 } from "lucide-react-native";
+import AudioItem from "@/components/AudioItem";
 
-interface Track {
-  id: string;
-  name: string;
-}
-
-const mockTracks: Track[] = [
-  { id: "1", name: "Track 1" },
-  { id: "2", name: "Track 2" },
-  { id: "3", name: "Track 3" },
-  { id: "4", name: "Track 4" },
-  { id: "5", name: "Track 5" },
-];
 
 export default function PlaylistDetail() {
   const { id, tracks } = useLocalSearchParams();
@@ -22,16 +11,11 @@ export default function PlaylistDetail() {
   const trackList = tracks ? JSON.parse(tracks as string) : [];
 
   const handleAddTracks = () => {
-    router.push("/playlist/track/music")
+    router.push(`/playlist/track/${id}/create`)
   };
 
   const renderTrackItem = ({ item }: { item: Track }) => (
-    <Pressable style={styles.trackItem}>
-      <View style={styles.trackIconContainer}>
-        <Music2 size={24} color="#6366f1" />
-      </View>
-      <Text style={styles.trackName}>{item.name}</Text>
-    </Pressable>
+   <AudioItem index={item.duration} item={item}/>
   );
 
   return (
@@ -118,5 +102,4 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
 });
-
 
