@@ -5,13 +5,14 @@ import useAudioStore from '@/store/AudioStore';
 
 interface AudioPlayerProps {
     uri: string;
+    currentTitle: string;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
     const {currentUri, sound, isPlaying, loadAudio, playAudio, pauseAudio } = useAudioStore();
 
     useEffect(() => {
-        loadAudio(uri);
+        loadAudio(uri, currentTitle);
     }, [uri]);
 
    const handlePlayPause = async () => {
@@ -19,7 +20,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri }) => {
         if (isPlaying) {
             await pauseAudio();
         }
-        await loadAudio(uri);
+        await loadAudio(uri, currentTitle);
         await playAudio(); 
     } else {
         
