@@ -1,17 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Modal, StyleSheet, Text, Pressable, View, TextInput } from 'react-native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { loadPlaylists,savePlaylists } from '@/services/PlayListService';
-import { Plus } from 'lucide-react-native';
+import { Modal, StyleSheet, Text, Pressable, View, TextInput } from 'react-native';
+import { Plus, X } from 'lucide-react-native';
 import usePlaylistStore from '@/store/PlayListStore';
+
 export const PlayListCreateModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  
-    
- const [newPlaylistName, setNewPlaylistName] = useState('');
-  const { playlists, loadPlaylists, addPlaylist } = usePlaylistStore();
+  const [newPlaylistName, setNewPlaylistName] = useState('');
+  const { loadPlaylists, addPlaylist } = usePlaylistStore();
 
-  // Charger les playlists au montage du composant
   useEffect(() => {
     loadPlaylists();
   }, [loadPlaylists]);
@@ -19,112 +15,71 @@ export const PlayListCreateModal = () => {
   const handleAddPlaylist = () => {
     if (newPlaylistName.trim() === '') return;
 
-    // Crée une nouvelle playlist
     const newPlaylist = {
       id: Date.now().toString(),
       name: newPlaylistName,
       tracks: [],
     };
 
-    // Utilise la méthode addPlaylist du store
     addPlaylist(newPlaylist);
-    setNewPlaylistName(''); // Réinitialise le champ
-    setModalVisible(false); // Ferme le modal
+    setNewPlaylistName('');
+    setModalVisible(false);
   };
 
-
-
-
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.centeredView}>
-        <View>
+    <>
+      <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
+        <Plus size={24} color="#ffffff" />
+      </Pressable>
 
-        
-          <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-            <Plus size={24} color="#ffffff" />
-          </Pressable>
-        </View>
-        {/* Modal pour la création de la playlist */}
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Le modal a été fermé.');
-            setModalVisible(false);
-          }}
-          
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={null}>Créer une nouvelle playlist</Text>
-              {/* Champ de saisie pour le nom de la playlist */}
-              <TextInput
-                style={styles.input}
-                onChangeText={(text) => setNewPlaylistName(text)} // Met à jour le nom de la playlist
-                value={newPlaylistName}
-                placeholder="Nom de la playlist"
-              />
-              {/* Bouton pour créer la playlist */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalView}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Create New Playlist</Text>
               <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={handleAddPlaylist}
-              >
-                <Text style={styles.textStyle}>Créer la Playlist</Text>
-              </Pressable>
-              {/* Bouton pour fermer le modal */}
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
+                style={styles.closeButton}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.textStyle}>Fermer le modal</Text>
+                <X size={24} color="#64748b" />
               </Pressable>
             </View>
-          </View>
-        </Modal>
 
-        {/* Bouton pour afficher le modal */}
-       
-      </SafeAreaView>
-    </SafeAreaProvider>
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Playlist Name</Text>
+              <TextInput
+                style={styles.input}
+                onChangeText={setNewPlaylistName}
+                value={newPlaylistName}
+                placeholder="Enter playlist name"
+                placeholderTextColor="#94a3b8"
+                autoFocus
+              />
+            </View>
+
+            <Pressable
+              style={[
+                styles.createButton,
+                !newPlaylistName.trim() && styles.createButtonDisabled
+              ]}
+              onPress={handleAddPlaylist}
+              disabled={!newPlaylistName.trim()}
+            >
+              <Text style={styles.createButtonText}>Create Playlist</Text>
+            </Pressable>
+          </View>
+        </View>
+      </Modal>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 15,
-    width: '100%',
-    paddingLeft: 8,
-    borderRadius: 4,
-  },
-  button: {
-    borderRadius: 20,
-    padding: 10,
-    elevation: 2,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   addButton: {
     backgroundColor: '#6366f1',
     width: 40,
@@ -132,23 +87,82 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
   },
-  buttonOpen: {
-    backgroundColor: '#F194FF',
-    
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-  buttonClose: {
-    backgroundColor: '#2196F3',
-    marginTop: 10,
-    width: '80%', // Ajusté la largeur pour qu'il y ait plus de place pour le texte
+  modalView: {
+    backgroundColor: 'white',
+    borderRadius: 24,
+    width: '90%',
+    maxWidth: 400,
+    padding: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 5,
   },
-  textStyle: {
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 24,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1e293b',
+  },
+  closeButton: {
+    padding: 4,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  inputLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#64748b',
+    marginBottom: 8,
+  },
+  input: {
+    height: 48,
+    backgroundColor: '#f8fafc',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    fontSize: 16,
+    color: '#1e293b',
+  },
+  createButton: {
+    backgroundColor: '#6366f1',
+    height: 48,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  createButtonDisabled: {
+    backgroundColor: '#cbd5e1',
+    shadowColor: 'transparent',
+  },
+  createButtonText: {
     color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

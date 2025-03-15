@@ -1,30 +1,40 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, StyleSheet, Pressable } from 'react-native';
+import { View, Text, TextInput, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
 import { PlayListCreateModal } from './PlayListModal';
-import { PlayCircle, Music2, MoreVertical, Plus } from 'lucide-react-native';
+import { CirclePlay as PlayCircle, Music2, MoveVertical as MoreVertical, Plus, Trash2 } from 'lucide-react-native';
 import usePlaylistStore from '@/store/PlayListStore';
 import { useRouter } from 'expo-router';
 
 export const PlaylistScreen = () => {
-  const {loadPlaylists,playlists}=usePlaylistStore();
-  const router=useRouter() 
+  const { loadPlaylists, playlists, deletePlayList } = usePlaylistStore();
+  const router = useRouter();
 
   useEffect(() => {
-    loadPlaylists()
+    loadPlaylists();
   }, []);
 
+  const handleDeletePlaylist = (playlistId: string, playlistName: string) => {
+    Alert.alert(
+      "Delete Playlist",
+      `Are you sure you want to delete ${playlistName}?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => deletePlayList(playlistId)
+        }
+      ]
+    );
+  };
 
   const renderPlaylistItem = ({ item }: { item: Playlist }) => (
-    <Pressable style={styles.playlistItem} 
-     onPress={() =>
-      router.push({
-        pathname: `/playlist/track/[id]/list`,
-        params: { 
-          id:item.id,
-          tracks: JSON.stringify(item.tracks)
-        }, // Convertir en string
-      })
-    }
+    <Pressable 
+      style={styles.playlistItem}
+      onPress={() => router.push(`/playlist/track/${item.id}/list`)}
     >
       <View style={styles.playlistIconContainer}>
         <Music2 size={24} color="#6366f1" />
@@ -33,7 +43,13 @@ export const PlaylistScreen = () => {
         <Text style={styles.playlistName}>{item.name}</Text>
         <Text style={styles.trackCount}>{item.tracks.length} tracks</Text>
       </View>
-     
+      <Pressable 
+        style={styles.deleteButton}
+        onPress={() => handleDeletePlaylist(item.id, item.name)}
+        hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+      >
+        <Trash2 size={20} color="#ef4444" />
+      </Pressable>
     </Pressable>
   );
 
@@ -41,11 +57,9 @@ export const PlaylistScreen = () => {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Your Playlists</Text>
-       
         <PlayListCreateModal />
       </View>
       
-        
       <FlatList
         data={playlists}
         keyExtractor={(item) => item.id}
@@ -75,7 +89,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#1e293b',
   },
-  
   listContainer: {
     padding: 16,
   },
@@ -117,10 +130,8 @@ const styles = StyleSheet.create({
     color: '#64748b',
     marginTop: 4,
   },
-  playlistActions: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  deleteButton: {
+    padding: 8,
+    marginLeft: 8,
   }
-}
-)
-  
+});

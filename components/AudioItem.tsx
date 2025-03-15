@@ -1,18 +1,19 @@
-// AudioItem.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { Music2 } from 'lucide-react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
+import { Music2, Trash2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import AudioPlayer from './AudioPlayer';
 import { formatDuration } from '@/helpers/utils';
-import * as MediaLibrary  from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library';
 
 type AudioItemProps = {
   item: Track;
   index: number;
+  isItInPlayList?: boolean;
+  onDelete?: (id: string) => void;
 };
 
-const AudioItem = ({ item, index }: AudioItemProps) => {
+const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -29,6 +30,24 @@ const AudioItem = ({ item, index }: AudioItemProps) => {
     });
   };
 
+  const handleDelete = () => {
+    Alert.alert(
+      "Remove from Playlist",
+      `Are you sure you want to remove "${item.filename}" from this playlist?`,
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Remove",
+          style: "destructive",
+          onPress: () => onDelete?.(item.id)
+        }
+      ]
+    );
+  };
+
   return (
     <TouchableOpacity style={styles.audioItem} onPress={handlePress}>
       <View style={styles.iconContainer}>
@@ -41,6 +60,15 @@ const AudioItem = ({ item, index }: AudioItemProps) => {
         <Text style={styles.duration}>{formatDuration(item.duration)}</Text>
       </View>
       <AudioPlayer uri={item.uri} currentTitle={item.filename} />
+      {isItInPlayList && (
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={handleDelete}
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Trash2 size={20} color="#ef4444" />
+        </TouchableOpacity>
+      )}
     </TouchableOpacity>
   );
 };
@@ -83,6 +111,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#64748b',
     marginTop: 2,
+  },
+  deleteButton: {
+    marginLeft: 12,
+    padding: 8,
   },
 });
 

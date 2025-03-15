@@ -14,10 +14,11 @@ export const fetchAudioFiles = async () => {
 export const fetchAudioByAlbum = async (album: string) => {
     const media = await MediaLibrary.getAssetsAsync({
       mediaType: MediaLibrary.MediaType.audio,
-      first: 1000,
+      first: 10,
       sortBy: MediaLibrary.SortBy.default,
       album:album
     });
+    const med=await MediaLibrary.getAlbumsAsync()
 
     return media.assets
   }
