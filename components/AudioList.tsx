@@ -10,18 +10,10 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
-import { Music2, AlertCircle ,PlayIcon} from 'lucide-react-native';
-import Animated, {
-  FadeInUp,
-  FadeOut,
-  Layout,
-} from 'react-native-reanimated';
-import { formatDuration } from '@/helpers/utils';
 import { useRouter } from 'expo-router';
 import { fetchAudioFiles } from '@/helpers/fetch';
-import {Audio} from 'expo-av';
-import AudioPlayer from './AudioPlayer';
 import BackgroundAudioPlayer from './BackgroundPlay';
+import Icon from 'react-native-vector-icons/FontAwesome6';
 const { width } = Dimensions.get('window');
 import AudioItem from './AudioItem';
 
@@ -43,10 +35,9 @@ export const AudioListScreen = () => {
     const { status } = await MediaLibrary.requestPermissionsAsync();
     setPermissionStatus(status);
     
-    if (status === 'granted') {
       fetchAudioFiles().then(setAudioFiles);
       
-    }
+    
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
@@ -55,7 +46,7 @@ export const AudioListScreen = () => {
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      { <Music2 size={64} color="#6366f1" style={styles.emptyIcon} />}
+      { <Icon name='music' size={64} color="#6366f1" style={styles.emptyIcon} />}
       <Text style={styles.emptyText}>No audio files found</Text>
       <Text style={styles.emptySubtext}>
         Add some audio files to your device to see them here
@@ -65,7 +56,7 @@ export const AudioListScreen = () => {
 
   const renderPermissionDenied = () => (
     <View style={styles.emptyState}>
-      <AlertCircle size={64} color="#ef4444" style={styles.emptyIcon} />
+      <Icon name="alert-circle" size={64} color="#ef4444" style={styles.emptyIcon} />
       <Text style={styles.emptyText}>Permission Required</Text>
       <Text style={styles.emptySubtext}>
         We need access to your audio files to display them here
@@ -81,7 +72,7 @@ export const AudioListScreen = () => {
 
   const renderWebPlatformMessage = () => (
     <View style={styles.emptyState}>
-      <AlertCircle size={64} color="#6366f1" style={styles.emptyIcon} />
+      <Icon name="alert-circle" size={64} color="#ef4444" style={styles.emptyIcon} />
       <Text style={styles.emptyText}>Web Platform</Text>
       <Text style={styles.emptySubtext}>
         Audio file listing is not supported in web browsers
@@ -102,7 +93,7 @@ export const AudioListScreen = () => {
 
       {permissionStatus === 'denied' && renderPermissionDenied()}
       {permissionStatus === 'web' && renderWebPlatformMessage()}
-      {permissionStatus === 'granted' && (
+      
         <FlatList
           data={audioFiles}
           keyExtractor={(item) => item.id}
@@ -111,7 +102,7 @@ export const AudioListScreen = () => {
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />
-      )}
+    
 
       <BackgroundAudioPlayer />
     </SafeAreaView>

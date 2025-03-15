@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, FlatList, StyleSheet, Pressable, Alert } from 'react-native';
 import { PlayListCreateModal } from './PlayListModal';
-import { CirclePlay as PlayCircle, Music2, MoveVertical as MoreVertical, Plus, Trash2 } from 'lucide-react-native';
 import usePlaylistStore from '@/store/PlayListStore';
 import { useRouter } from 'expo-router';
+import Icon from    'react-native-vector-icons/FontAwesome6';
 
 export const PlaylistScreen = () => {
   const { loadPlaylists, playlists, deletePlayList } = usePlaylistStore();
@@ -37,7 +37,7 @@ export const PlaylistScreen = () => {
       onPress={() => router.push(`/playlist/track/${item.id}/list`)}
     >
       <View style={styles.playlistIconContainer}>
-        <Music2 size={24} color="#6366f1" />
+        <Icon name='music' size={24} color="#6366f1" />
       </View>
       <View style={styles.playlistInfo}>
         <Text style={styles.playlistName}>{item.name}</Text>
@@ -48,7 +48,7 @@ export const PlaylistScreen = () => {
         onPress={() => handleDeletePlaylist(item.id, item.name)}
         hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
       >
-        <Trash2 size={20} color="#ef4444" />
+        <Icon name="trash-can" size={20} color="#ef4444" />
       </Pressable>
     </Pressable>
   );

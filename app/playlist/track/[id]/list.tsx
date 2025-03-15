@@ -1,8 +1,8 @@
 import { useLocalSearchParams, router } from "expo-router";
 import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
-import { Plus, Music2 } from "lucide-react-native";
 import AudioItem from "@/components/AudioItem";
 import usePlaylistStore from "@/store/PlayListStore";
+import Icon from "react-native-vector-icons/FontAwesome6";
 
 
 export default function PlaylistDetail() {
@@ -35,7 +35,7 @@ export default function PlaylistDetail() {
         style={styles.fab}
         onPress={handleAddTracks}
       >
-        <Plus color="#ffffff" size={24} />
+        <Icon name="plus" color="#ffffff" size={24} />
       </Pressable>
     </View>
   );

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, StyleSheet, Text, Pressable, View, TextInput } from 'react-native';
-import { Plus, X } from 'lucide-react-native';
 import usePlaylistStore from '@/store/PlayListStore';
-
+import Icon from 'react-native-vector-icons/FontAwesome6';
 export const PlayListCreateModal = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [newPlaylistName, setNewPlaylistName] = useState('');
@@ -29,7 +28,7 @@ export const PlayListCreateModal = () => {
   return (
     <>
       <Pressable style={styles.addButton} onPress={() => setModalVisible(true)}>
-        <Plus size={24} color="#ffffff" />
+        <Icon name="plus" size={24} color="#ffffff" />
       </Pressable>
 
       <Modal
@@ -46,7 +45,7 @@ export const PlayListCreateModal = () => {
                 style={styles.closeButton}
                 onPress={() => setModalVisible(false)}
               >
-                <X size={24} color="#64748b" />
+                <Icon name="window-close" size={24} color="#64748b" />
               </Pressable>
             </View>
 
