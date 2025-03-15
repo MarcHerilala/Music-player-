@@ -17,7 +17,6 @@ interface PlaylistStore {
 export const usePlaylistStore = create<PlaylistStore>((set) => ({
   playlists: [],
   
-  // Charger les playlists depuis AsyncStorage
   loadPlaylists: async () => {
     try {
       const playlists = await AsyncStorage.getItem('playlists');
@@ -29,13 +28,11 @@ export const usePlaylistStore = create<PlaylistStore>((set) => ({
     }
   },
   
-  // Mettre à jour les playlists dans AsyncStorage
   setPlaylists: (playlists: Playlist[]) => {
     AsyncStorage.setItem('playlists', JSON.stringify(playlists));
     set({ playlists });
   },
 
-  // Ajouter une nouvelle playlist
   addPlaylist: (newPlaylist: Playlist) => {
     set((state) => {
       const updatedPlaylists = [...state.playlists, newPlaylist];
@@ -44,7 +41,6 @@ export const usePlaylistStore = create<PlaylistStore>((set) => ({
     });
   },
 
-    // Ajouter un track à une playlist spécifique
   addTracksToPlaylist: (playlistId: string, newTracks: Track[]) => {
   set((state) => {
     const updatedPlaylists = state.playlists.map((playlist) =>
@@ -58,7 +54,6 @@ export const usePlaylistStore = create<PlaylistStore>((set) => ({
   });
 },
 
-  // Supprimer un track d'une playlist spécifique
   removeTrackFromPlaylist: (playlistId:string, trackId:string) => {
     set((state) => {
       const updatedPlaylists = state.playlists.map((playlist) =>

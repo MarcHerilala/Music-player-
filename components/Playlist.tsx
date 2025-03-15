@@ -17,13 +17,8 @@ export const PlaylistScreen = () => {
   const renderPlaylistItem = ({ item }: { item: Playlist }) => (
     <Pressable style={styles.playlistItem} 
      onPress={() =>
-      router.push({
-        pathname: `/playlist/track/[id]/list`,
-        params: { 
-          id:item.id,
-          tracks: JSON.stringify(item.tracks)
-        }, // Convertir en string
-      })
+      router.push( `/playlist/track/${item.id}/list`)
+       
     }
     >
       <View style={styles.playlistIconContainer}>

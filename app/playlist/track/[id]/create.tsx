@@ -43,7 +43,6 @@ export default function MusicList() {
     }));
     addTracksToPlaylist(playlistId,tracks)
 
-    // Navigate to playlist selection with selected tracks
     router.push({
       pathname: "/playlist",
       params: { tracks: JSON.stringify(tracks) }

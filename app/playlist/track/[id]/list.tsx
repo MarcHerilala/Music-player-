@@ -2,20 +2,24 @@ import { useLocalSearchParams, router } from "expo-router";
 import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
 import { Plus, Music2 } from "lucide-react-native";
 import AudioItem from "@/components/AudioItem";
+import usePlaylistStore from "@/store/PlayListStore";
 
 
 export default function PlaylistDetail() {
+  const {removeTrackFromPlaylist,playlists}=usePlaylistStore()
   const { id, tracks } = useLocalSearchParams();
 
-  // Convertir la liste des tracks en objet JS
-  const trackList = tracks ? JSON.parse(tracks as string) : [];
+  const playList=playlists.find((playlist)=>playlist.id===id)
+
+  const trackList = playList ? playList.tracks : [];
+  const playListId=Array.isArray(id)?id[0]:id
 
   const handleAddTracks = () => {
     router.push(`/playlist/track/${id}/create`)
   };
 
   const renderTrackItem = ({ item }: { item: Track }) => (
-   <AudioItem index={item.duration} item={item}/>
+   <AudioItem index={item.duration} item={item} isItInPlayList={true} onDelete={()=>removeTrackFromPlaylist(playListId,item.id)}/>
   );
 
   return (
