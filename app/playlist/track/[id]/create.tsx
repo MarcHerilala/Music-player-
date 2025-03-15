@@ -2,7 +2,7 @@ import { fetchAudioFiles } from "@/helpers/fetch";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import { Music2, Plus, CircleCheck as CheckCircle2 } from "lucide-react-native";
+import { Music2, Plus, CircleCheck as CheckCircle2, FileTerminal } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import usePlaylistStore from "@/store/PlayListStore";
 
@@ -12,11 +12,16 @@ export default function MusicList() {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
   const {id}=useLocalSearchParams()
-  const {addTracksToPlaylist}=usePlaylistStore()
+  const {addTracksToPlaylist,playlists}=usePlaylistStore()
   const playlistId = Array.isArray(id) ? id[0] : id;
   useEffect(() => {
     fetchAudioFiles().then(setAudioFiles);
   }, []);
+  const playList=playlists.find((playlist)=>playlist.id===id)
+
+    const availableTracks = audioFiles.filter(file => {
+    return !playList?.tracks.some(playListTrack => playListTrack.uri === file.uri);
+  });
 
   const toggleTrackSelection = (uri: string) => {
     setSelectedTracks(prev => {
@@ -64,7 +69,7 @@ export default function MusicList() {
       </View>
 
       <ScrollView style={styles.list}>
-        {audioFiles.map((file) => (
+        {availableTracks.map((file) => (
           <Pressable
             key={file.uri}
             style={styles.trackItem}
