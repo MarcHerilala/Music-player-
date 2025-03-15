@@ -84,11 +84,9 @@ export const AudioListScreen = () => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Audio Library</Text>
-        {permissionStatus === 'granted' && (
           <Text style={styles.subtitle}>
             {audioFiles.length} audio files found
           </Text>
-        )}
       </View>
 
       {permissionStatus === 'denied' && renderPermissionDenied()}

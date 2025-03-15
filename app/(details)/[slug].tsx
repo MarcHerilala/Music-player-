@@ -1,14 +1,24 @@
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
-import { MaterialIcons, AntDesign } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import AudioPlayer from "@/components/AudioPlayer";
 
 export default function AudioDetailsScreen() {
   const { slug, details } = useLocalSearchParams();
-
   const audio = details && typeof details === 'string' ? JSON.parse(details) : null;
 
+  const handleStop = () => {
+    console.log("Audio stopped");
+  };
+
+  const handlePrev = () => {
+    console.log("Previous track");
+  };
+
+  const handleNext = () => {
+    console.log("Next track");
+  };
 
   return (
     <View style={styles.container}>
@@ -20,7 +30,21 @@ export default function AudioDetailsScreen() {
       </View>
 
       <View style={styles.controls}>
-        <AudioPlayer uri={audio?.uri} currentTitle={audio?.filename}/>
+        <TouchableOpacity onPress={handlePrev} style={styles.controlButton}>
+          <MaterialIcons name="skip-previous" size={35} color="white" />
+        </TouchableOpacity>
+
+        <AudioPlayer uri={audio?.uri} currentTitle={audio?.filename} />
+
+        <TouchableOpacity onPress={handleNext} style={styles.controlButton}>
+          <MaterialIcons name="skip-next" size={35} color="white" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.stopButtonContainer}>
+        <TouchableOpacity onPress={handleStop} style={styles.stopButton}>
+          <MaterialIcons name="stop" size={30} color="white" />
+        </TouchableOpacity>
       </View>
 
       <View style={styles.details}>
@@ -29,8 +53,6 @@ export default function AudioDetailsScreen() {
         <Text style={styles.detailsText}>Album ID: {audio?.albumId}</Text>
         <Text style={styles.detailsText}>URI: {audio?.uri}</Text>
       </View>
-
-    
     </View>
   );
 }
@@ -55,6 +77,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: '#333',
+    marginBottom: 5,
   },
   subTitle: {
     fontSize: 16,
@@ -69,6 +92,7 @@ const styles = StyleSheet.create({
   controls: {
     flexDirection: 'row',
     justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 30,
   },
   controlButton: {
@@ -76,6 +100,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#6366f1',
     padding: 15,
     borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  stopButtonContainer: {
+    alignItems: 'center',
+    marginVertical: 15,
+  },
+  stopButton: {
+    backgroundColor: '#888', // Neutral grey for the stop button
+    padding: 20,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   details: {
     marginBottom: 20,
@@ -84,19 +121,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     marginBottom: 5,
-  },
-  footer: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingVertical: 20,
-    borderTopWidth: 1,
-    borderTopColor: '#ddd',
-  },
-  iconButton: {
-    alignItems: 'center',
-  },
-  iconText: {
-    marginTop: 5,
-    color: '#6366f1',
   },
 });
