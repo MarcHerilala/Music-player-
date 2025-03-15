@@ -2,10 +2,9 @@ import { fetchAudioFiles } from "@/helpers/fetch";
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, Pressable } from "react-native";
 import * as MediaLibrary from "expo-media-library";
-import { Music2, Plus, CircleCheck as CheckCircle2, FileTerminal } from "lucide-react-native";
 import { router, useLocalSearchParams } from "expo-router";
 import usePlaylistStore from "@/store/PlayListStore";
-
+import Icon from "react-native-vector-icons/FontAwesome6";
 
 
 export default function MusicList() {
@@ -59,7 +58,7 @@ export default function MusicList() {
         <Text style={styles.title}>Your Music</Text>
         {selectedTracks.size > 0 && (
           <Pressable style={styles.addButton} onPress={addToPlaylist}>
-            <Plus color="#fff" size={24} />
+            <Icon name="plus" color="#fff" size={24} />
             <Text style={styles.addButtonText}>
               Add to Playlist ({selectedTracks.size})
             </Text>
@@ -76,7 +75,7 @@ export default function MusicList() {
           >
             <View style={styles.trackInfo}>
               <View style={styles.iconContainer}>
-                <Music2 size={24} color="#6366f1" />
+                <Icon name="music" size={24} color="#6366f1" />
               </View>
               <View style={styles.textContainer}>
                 <Text style={styles.trackName} numberOfLines={1}>
@@ -92,7 +91,7 @@ export default function MusicList() {
               selectedTracks.has(file.uri) && styles.checkboxSelected
             ]}>
               {selectedTracks.has(file.uri) && (
-                <CheckCircle2 size={24} color="#6366f1" />
+                <Icon name="checkcircle" size={24} color="#6366f1" />
               )}
             </View>
           </Pressable>

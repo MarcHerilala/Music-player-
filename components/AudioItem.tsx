@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { Music2, Trash2 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 import AudioPlayer from './AudioPlayer';
 import { formatDuration } from '@/helpers/utils';
-import * as MediaLibrary from 'expo-media-library';
-
+import Icon from 'react-native-vector-icons/FontAwesome6';
 type AudioItemProps = {
   item: Track;
   index: number;
@@ -51,7 +49,7 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) =>
   return (
     <TouchableOpacity style={styles.audioItem} onPress={handlePress}>
       <View style={styles.iconContainer}>
-        <Music2 size={24} color="#6366f1" />
+        <Icon name='music' size={24} color="#6366f1" />
       </View>
       <View style={styles.audioInfo}>
         <Text style={styles.fileName} numberOfLines={1}>
@@ -66,7 +64,7 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) =>
           onPress={handleDelete}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Trash2 size={20} color="#ef4444" />
+          <Icon name='trash-can' size={20} color="#ef4444" />
         </TouchableOpacity>
       )}
     </TouchableOpacity>

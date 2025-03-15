@@ -19,8 +19,12 @@
       "permissions": [
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.WAKE_LOCK",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.WAKE_LOCK",
         "android.permission.ACCESS_BACKGROUND_LOCATION"
-      ]
+      ],
+      "package": "com.marc_herilala.musicplayer"
     },
     "web": {
       "bundler": "metro",

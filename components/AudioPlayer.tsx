@@ -1,8 +1,9 @@
 import React, { useEffect, useState} from "react";
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { PlayIcon, PauseIcon } from 'lucide-react-native';
 import useAudioStore from '@/store/AudioStore';
 import { updateNotification } from "@/services/NotificationService";
+import Icon from 'react-native-vector-icons/FontAwesome';
+
 
 interface AudioPlayerProps {
     uri: string;
@@ -39,7 +40,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handlePlayPause} style={styles.button} disabled={!sound}>
-                {isPlaying &&currentUri==uri? <PauseIcon size={32} color="#6366f1" /> : <PlayIcon size={32} color="#6366f1" />}
+                {isPlaying &&currentUri==uri? <Icon name="pause" size={32} color="#6366f1" /> : <Icon name="play" size={32} color="#6366f1" />}
             </TouchableOpacity>
         </View>
     );
