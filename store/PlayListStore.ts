@@ -10,6 +10,7 @@ interface PlaylistStore {
   setPlaylists: (playlists: Playlist[]) => void;
   loadPlaylists: () => Promise<void>;
   addPlaylist: (newPlaylist: Playlist) => void;
+  deletePlayList: (playlistId: string) => void;
   addTracksToPlaylist: (playlistId: string, track: Track[]) => void;
   removeTrackFromPlaylist: (playlistId: string, trackId: string) => void;
 }
@@ -41,6 +42,14 @@ export const usePlaylistStore = create<PlaylistStore>((set) => ({
     });
   },
 
+  deletePlayList: (playlistId: string) => {
+    set((state) => {
+      const updatedPlaylists = state.playlists.filter((playlist) => playlist.id !== playlistId);
+      AsyncStorage.setItem('playlists', JSON.stringify(updatedPlaylists));
+      return { playlists: updatedPlaylists };
+    });
+  }
+,
   addTracksToPlaylist: (playlistId: string, newTracks: Track[]) => {
   set((state) => {
     const updatedPlaylists = state.playlists.map((playlist) =>
@@ -53,6 +62,7 @@ export const usePlaylistStore = create<PlaylistStore>((set) => ({
     return { playlists: updatedPlaylists };
   });
 },
+
 
   removeTrackFromPlaylist: (playlistId:string, trackId:string) => {
     set((state) => {
