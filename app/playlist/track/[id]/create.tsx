@@ -48,10 +48,9 @@ export default function MusicList() {
     }));
     addTracksToPlaylist(playlistId,tracks)
 
-    router.push({
-      pathname: "/playlist",
-      params: { tracks: JSON.stringify(tracks) }
-    });
+    router.replace(`/playlist/track/${playlistId}/list`);
+    router.back();
+   
   };
 
   return (
