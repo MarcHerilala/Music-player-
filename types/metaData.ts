@@ -2,5 +2,10 @@ export type Metadata = {
         title?: string;
         artist?: string;
         album?: string;
-        cover?: string; 
+        genre?:string;
+        picture?: picture; 
+}
+ type picture={
+    description: string;
+    pictureData: string;
 }
