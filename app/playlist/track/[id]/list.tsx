@@ -3,17 +3,25 @@ import { Text, View, FlatList, StyleSheet, Pressable } from "react-native";
 import AudioItem from "@/components/AudioItem";
 import usePlaylistStore from "@/store/PlayListStore";
 import Icon from "react-native-vector-icons/FontAwesome6";
-
-
+import useAudioStore from "@/store/AudioStore";
+import { useEffect } from "react";
+import * as MediaLibrary from  "expo-media-library";
 export default function PlaylistDetail() {
   const {removeTrackFromPlaylist,playlists}=usePlaylistStore()
   const { id, tracks } = useLocalSearchParams();
-
+  const {customPlaylist,setCustomPlaylist,togglePlaylistMode,loadAudio}=useAudioStore()
   const playList=playlists.find((playlist)=>playlist.id===id)
 
   const trackList = playList ? playList.tracks : [];
   const playListId=Array.isArray(id)?id[0]:id
-
+  useEffect(() => {
+    
+    if(customPlaylist.length>0){
+      setCustomPlaylist([])
+    }
+    setCustomPlaylist(trackList as MediaLibrary.Asset[]);
+    togglePlaylistMode(true);
+  }, [trackList]);
   const handleAddTracks = () => {
     router.push(`/playlist/track/${id}/create`)
   };
@@ -26,7 +34,7 @@ export default function PlaylistDetail() {
     <View style={styles.container}>
       <Text style={styles.playlistTitle}>Playlist {id}</Text>
       <FlatList
-        data={trackList}
+        data={customPlaylist}
         keyExtractor={(item) => item.id}
         renderItem={renderTrackItem}
         contentContainerStyle={styles.trackList}

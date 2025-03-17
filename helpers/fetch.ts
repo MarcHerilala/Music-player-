@@ -13,6 +13,16 @@ export const fetchAudioFiles = async () => {
     return media.assets
   };
 
+export const getAudioById = async (id: string) => {
+  const audioFiles = await fetchAudioFiles();
+  const audio = audioFiles.find((file) => file.id === id);
+
+  if (!audio) {
+    throw new Error(`Audio with ID ${id} not found`);
+  }
+
+  return audio;
+};
 
 export const fetchAudioByAlbum = async (album: string) => {
     const media = await MediaLibrary.getAssetsAsync({

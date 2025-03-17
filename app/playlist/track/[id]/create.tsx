@@ -40,7 +40,7 @@ export default function MusicList() {
     );
     
     const tracks: Track[] = selectedAudioFiles.map(file => ({
-      id:file.uri,
+      id:file.id,
       filename: file.filename,
       uri: file.uri,
       duration:file.duration

@@ -6,42 +6,81 @@ import AudioPlayer from "@/components/AudioPlayer";
 import { Metadata } from "@/types/metaData";
 import MusicInfo from "expo-music-info-2";
 import { Ionicons } from '@expo/vector-icons';
+import { getAudioById } from "@/helpers/fetch";
+import { useRouter } from "expo-router";
+import useAudioStore from "@/store/AudioStore";
+import * as MediaLibrary from "expo-media-library";
 
 const DEFAULT_COVER = "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=800&auto=format&fit=crop&q=60&ixlib=rb-4.0.3";
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
 export default function AudioDetailsScreen() {
-  const { slug, details } = useLocalSearchParams();
+  const { slug } = useLocalSearchParams();
+  const {  stopAudio,nextAudio, prevAudio } = useAudioStore();
   const [metadata, setMetadata] = useState<Metadata>();
-  const audio = details && typeof details === 'string' ? JSON.parse(details) : null;
-  
-  useEffect(() => {
-    if (!audio?.uri) return;
+  const [audio, setAudio] = useState<MediaLibrary.Asset | null>(null);
+  const [isNavigating, setIsNavigating] = useState(false);
+  const router = useRouter();
 
-    (MusicInfo as any).getMusicInfoAsync(audio.uri, {
-      title: true,
-      artist: true,
-      album: true,
-      genre: true,
-      picture: true
-    }).then((info: React.SetStateAction<Metadata | undefined>) => {
-      setMetadata(info);
-    }).catch((error: any) => {
-      console.error("Error fetching metadata:", error);
-    });
-  }, [audio?.uri]);
+  useEffect(() => {
+    const loadAudio = async () => {
+      try {
+        const audioData = await getAudioById(slug as string);
+        setAudio(audioData);
+
+        if (audioData?.uri) {
+          const info = await (MusicInfo as any).getMusicInfoAsync(audioData.uri, {
+            title: true,
+            artist: true,
+            album: true,
+            genre: true,
+            picture: true
+          });
+          setMetadata(info);
+        }
+      } catch (error) {
+        console.error("Error loading audio:", error);
+      }
+    };
+
+    loadAudio();
+  }, [slug]);
+
+
 
   const handlePrevious = () => {
-    // Implement previous track functionality
+   prevAudio().then(id=>{
+      if(id){
+        console.log(id);
+        
+        router.replace(`/(details)/${id}`)
+      }
+   })
   };
 
   const handleStop = () => {
-    // Implement stop functionality
+    stopAudio();
   };
 
   const handleNext = () => {
-    // Implement next track functionality
+   nextAudio().then(id=>{
+      if(id){
+        console.log(id);
+        
+        router.replace(`/(details)/${id}`)
+      }
+   })
+   
+   
   };
+
+  if (!audio) {
+    return (
+      <View style={[styles.container, styles.loadingContainer]}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -82,8 +121,12 @@ export default function AudioDetailsScreen() {
         </View>
 
         <View style={styles.controlsContainer}>
-          <TouchableOpacity onPress={handlePrevious} style={styles.controlButton}>
-            <Ionicons name="play-skip-back" size={32} color="#6b46c1" />
+          <TouchableOpacity 
+            onPress={handlePrevious} 
+            style={[styles.controlButton, isNavigating && styles.disabledButton]}
+            disabled={isNavigating}
+          >
+            <Ionicons name="play-skip-back" size={32} color={isNavigating ? "#9ca3af" : "#6b46c1"} />
           </TouchableOpacity>
           
           <View style={styles.mainControls}>
@@ -92,12 +135,16 @@ export default function AudioDetailsScreen() {
             </TouchableOpacity>
             
             <View style={styles.playPauseContainer}>
-              <AudioPlayer uri={audio?.uri} currentTitle={audio?.filename} />
+              <AudioPlayer uri={audio.uri} currentTitle={audio.filename} />
             </View>
           </View>
 
-          <TouchableOpacity onPress={handleNext} style={styles.controlButton}>
-            <Ionicons name="play-skip-forward" size={32} color="#6b46c1" />
+          <TouchableOpacity 
+            onPress={handleNext} 
+            style={[styles.controlButton, isNavigating && styles.disabledButton]}
+            disabled={isNavigating}
+          >
+            <Ionicons name="play-skip-forward" size={32} color={isNavigating ? "#9ca3af" : "#6b46c1"} />
           </TouchableOpacity>
         </View>
       </View>
@@ -109,6 +156,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  loadingContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   backgroundImage: {
     ...StyleSheet.absoluteFillObject,
@@ -214,6 +265,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
+  },
+  disabledButton: {
+    backgroundColor: 'rgba(156,163,175,0.1)',
+    shadowOpacity: 0,
   },
   mainControls: {
     flexDirection: 'row',
