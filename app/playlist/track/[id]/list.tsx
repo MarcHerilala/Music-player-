@@ -27,12 +27,12 @@ export default function PlaylistDetail() {
   };
 
   const renderTrackItem = ({ item }: { item: Track }) => (
-   <AudioItem index={item.duration} item={item} isItInPlayList={true} onDelete={()=>removeTrackFromPlaylist(playListId,item.id)}/>
+   <AudioItem index={item.duration} item={item} isItInPlayList={true} currentTitle={item.filename} uri={item.uri} onDelete={()=>removeTrackFromPlaylist(playListId,item.id)}/>
   );
 
   return (
     <View style={styles.container}>
-      <Text style={styles.playlistTitle}>Playlist {id}</Text>
+      <Text style={styles.playlistTitle}>Playlist</Text>
       <FlatList
         data={customPlaylist}
         keyExtractor={(item) => item.id}
@@ -53,13 +53,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#111827",
   },
   playlistTitle: {
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 24,
-    color: "#1e293b",
+    color: "white",
   },
   trackList: {
     paddingBottom: 80, // Extra padding for FAB
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: "#6366f1",
+    backgroundColor: "#FF4500",
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",

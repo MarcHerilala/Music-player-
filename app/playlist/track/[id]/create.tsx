@@ -6,7 +6,6 @@ import { router, useLocalSearchParams } from "expo-router";
 import usePlaylistStore from "@/store/PlayListStore";
 import Icon from "react-native-vector-icons/FontAwesome6";
 
-
 export default function MusicList() {
   const [audioFiles, setAudioFiles] = useState<MediaLibrary.Asset[]>([]);
   const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
@@ -75,7 +74,7 @@ export default function MusicList() {
           >
             <View style={styles.trackInfo}>
               <View style={styles.iconContainer}>
-                <Icon name="music" size={24} color="#6366f1" />
+                <Icon name="music" size={24} color="#FF4500" />
               </View>
               <View style={styles.textContainer}>
                 <Text style={styles.trackName} numberOfLines={1}>
@@ -91,7 +90,7 @@ export default function MusicList() {
               selectedTracks.has(file.uri) && styles.checkboxSelected
             ]}>
               {selectedTracks.has(file.uri) && (
-                <Icon name="checkcircle" size={24} color="#6366f1" />
+                <Icon name="check-circle" size={24} color="#FF4500" />
               )}
             </View>
           </Pressable>
@@ -104,26 +103,26 @@ export default function MusicList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#111827",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#111827",
     borderBottomWidth: 1,
     borderBottomColor: "#e2e8f0",
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1e293b",
+    color: "white",
   },
   addButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: "#FF4500",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -141,7 +140,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#1A2637",
+
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 12,
@@ -174,7 +174,7 @@ const styles = StyleSheet.create({
   trackName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1e293b",
+    color: "white",
   },
   duration: {
     fontSize: 14,
@@ -192,6 +192,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxSelected: {
-    borderColor: "#6366f1",
+    borderColor: "#FF4500",
   },
 });
