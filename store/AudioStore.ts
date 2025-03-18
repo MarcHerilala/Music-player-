@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { Audio } from 'expo-av';
 import * as MediaLibrary from "expo-media-library"
+import { router } from 'expo-router';
 
 
 interface AudioState {
@@ -14,6 +15,8 @@ interface AudioState {
   currentIndex: number | null;
   nextAudioId: string | null;
   prevAudioId: string | null;
+  positionMillis:number;
+  durationMillis:number;
   setDefaultPlaylist: (tracks: MediaLibrary.Asset[]) => void;
   setCustomPlaylist: (tracks: MediaLibrary.Asset[]) => void;
   togglePlaylistMode: (mode:boolean) => void;
@@ -23,6 +26,7 @@ interface AudioState {
   stopAudio: () => Promise<void>;
   nextAudio: () => Promise<string | undefined>;
   prevAudio: () => Promise<string | undefined>;
+  seekAudio: (positionMillis:number) => Promise<void>;
 }
 
 const useAudioStore = create<AudioState>((set, get) => ({
@@ -36,7 +40,9 @@ const useAudioStore = create<AudioState>((set, get) => ({
   currentIndex: null,
   nextAudioId:null,
   prevAudioId:null,
-
+  durationMillis:0,
+  positionMillis:0,
+  
   setDefaultPlaylist: (tracks) => {
     set({ defaultPlaylist: tracks });
     if (!get().isCustomMode) set({ currentIndex: 0 });
@@ -71,6 +77,19 @@ const useAudioStore = create<AudioState>((set, get) => ({
         { uri },
         { shouldPlay: false }
       );
+      newSound.setOnPlaybackStatusUpdate(async (status) => {
+        if(status.isLoaded){
+            if (status.didJustFinish && !status.isLooping) {
+            await get().nextAudio();
+            
+      }
+          set({
+            durationMillis:status.durationMillis,
+            positionMillis:status.positionMillis
+          })
+        }
+    });
+    
 
       set({ sound: newSound, currentUri: uri, currentTitle: title, isPlaying: false });
     }
@@ -124,6 +143,7 @@ const useAudioStore = create<AudioState>((set, get) => ({
     set({ currentIndex: nextIndex ,nextAudioId:nextTrack.id});
   
     await get().playAudio();
+    router.replace(`/(details)/${nextTrack.id}`);
     return nextTrack.id;
   },
 
@@ -144,8 +164,16 @@ const useAudioStore = create<AudioState>((set, get) => ({
     });
    
     await get().playAudio();
+    router.replace(`/(details)/${prevTrack.id}`);
     return prevTrack.id
   },
+  seekAudio: async (positionMillis:number) =>{
+    const {sound,durationMillis}=get()
+     if (sound && positionMillis >= 0 && positionMillis <= durationMillis) {
+      await sound.setPositionAsync(positionMillis);
+      set({ positionMillis });
+    }
+  }
 }));
 
 export default useAudioStore;

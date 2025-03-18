@@ -1,31 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
-import Slider from '@react-native-community/slider';
+import React from 'react';
+import { View, Text, StyleSheet } from 'react-native';
+import { GestureDetector, Gesture, GestureHandlerRootView } from 'react-native-gesture-handler';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+  runOnJS,
+  useDerivedValue
+} from 'react-native-reanimated';
 import useAudioStore from '@/store/AudioStore';
 
 const ProgressBar = () => {
-  const { positionMillis, durationMillis, seekAudio, isPlaying, isLoading } = useAudioStore();
-  const [isSeeking, setIsSeeking] = useState(false);
-  const [seekValue, setSeekValue] = useState(0);
+  const { positionMillis, durationMillis, seekAudio } = useAudioStore();
+  
+  const progress = useSharedValue(0);
+  const isSeeking = useSharedValue(false);
+  const barWidth = useSharedValue(0);
 
-  useEffect(() => {
-    if (!isSeeking) {
-      setSeekValue(positionMillis);
+  useDerivedValue(() => {
+    if (!isSeeking.value) {
+      progress.value = durationMillis > 0 ? positionMillis / durationMillis : 0;
     }
-  }, [positionMillis, isSeeking]);
+  });
 
-  const handleSlidingStart = () => {
-    setIsSeeking(true);
-  };
+  const panGesture = Gesture.Pan()
+    .onStart(() => {
+      isSeeking.value = true;
+    })
+    .onUpdate((event) => {
+      const newProgress = Math.max(0, Math.min(1, event.x / barWidth.value));
+      progress.value = newProgress;
+    })
+    .onEnd(() => {
+      const seekPosition = progress.value * durationMillis;
+      runOnJS(seekAudio)(seekPosition); 
+      isSeeking.value = false;
+    });
 
-  const handleSlidingComplete = async (value: number) => {
-    setIsSeeking(false);
-    await seekAudio(value);
-  };
+  const progressStyle = useAnimatedStyle(() => ({
+    width: `${progress.value * 100}%`,
+  }));
 
-  const handleValueChange = (value: number) => {
-    setSeekValue(value);
-  };
+  const thumbStyle = useAnimatedStyle(() => ({
+    transform: [
+      { translateX: withSpring(progress.value * (barWidth.value - 16)) },
+    ],
+  }));
 
   const formatTime = (milliseconds: number) => {
     const totalSeconds = Math.floor(milliseconds / 1000);
@@ -34,32 +54,25 @@ const ProgressBar = () => {
     return `${minutes}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="small" color="#1EB1FC" />
-      </View>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.timeText}>{formatTime(seekValue)}</Text>
-      <Slider
-        style={styles.slider}
-        minimumValue={0}
-        maximumValue={durationMillis || 1}
-        value={seekValue}
-        onSlidingStart={handleSlidingStart}
-        onSlidingComplete={handleSlidingComplete}
-        onValueChange={handleValueChange}
-        minimumTrackTintColor="#1EB1FC"
-        maximumTrackTintColor="#8E8E93"
-        thumbTintColor="#1EB1FC"
-        disabled={!isPlaying && positionMillis === 0}
-      />
+    <GestureHandlerRootView style={styles.container}>
+      <Text style={styles.timeText}>{formatTime(positionMillis)}</Text>
+      
+      <GestureDetector gesture={panGesture}>
+        <View 
+          style={styles.progressContainer}
+          onLayout={({ nativeEvent }) => {
+            barWidth.value = nativeEvent.layout.width;
+          }}
+        >
+          <View style={styles.progressBackground} />
+          <Animated.View style={[styles.progressFill, progressStyle]} />
+          <Animated.View style={[styles.thumb, thumbStyle]} />
+        </View>
+      </GestureDetector>
+
       <Text style={styles.timeText}>{formatTime(durationMillis)}</Text>
-    </View>
+    </GestureHandlerRootView>
   );
 };
 
@@ -68,20 +81,45 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 10,
+    height: 60,
   },
   loadingContainer: {
-    height: 50,
+    height: 60,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  slider: {
+  progressContainer: {
     flex: 1,
+    height: 8,
     marginHorizontal: 10,
+    borderRadius: 4,
+    overflow: 'hidden',
+  },
+  progressBackground: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    height: '100%',
+    backgroundColor: '#8E8E93',
+  },
+  progressFill: {
+    position: 'absolute',
+    left: 0,
+    height: '100%',
+    backgroundColor: '#1EB1FC',
+  },
+  thumb: {
+    position: 'absolute',
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: '#1EB1FC',
+    transform: [{ translateX: -8 }, { translateY: -4 }],
   },
   timeText: {
-    fontSize: 12,
+    fontSize: 14,
     color: '#666',
-    minWidth: 35,
+    minWidth: 40,
   },
 });
 
