@@ -16,9 +16,10 @@ const DEFAULT_COVER = "https://images.unsplash.com/photo-1470225620780-dba8ba36b
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const IS_SMALL_DEVICE = SCREEN_HEIGHT < 700;
 
+
 export default function AudioDetailsScreen() {
   const { slug } = useLocalSearchParams();
-  const { stopAudio, nextAudio, prevAudio } = useAudioStore();
+  const { stopAudio, nextAudio, prevAudio,setIsPlayingInTheDetail ,isPlayingInTheDetail} = useAudioStore();
   const [metadata, setMetadata] = useState<Metadata>();
   const [audio, setAudio] = useState<MediaLibrary.Asset | null>(null);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -46,7 +47,8 @@ export default function AudioDetailsScreen() {
     };
 
     loadAudio();
-  }, [slug]);
+    setIsPlayingInTheDetail(true);
+  }, [slug,isPlayingInTheDetail]);
 
   const handlePrevious = () => {
     prevAudio().then(id => {
@@ -148,7 +150,7 @@ export default function AudioDetailsScreen() {
             </TouchableOpacity>
             
             <View style={styles.playPauseContainer}>
-              <AudioPlayer uri={audio.uri} currentTitle={audio.filename} />
+              <AudioPlayer uri={audio.uri} currentTitle={audio.filename} isInDetail={true}/>
             </View>
           </View>
 

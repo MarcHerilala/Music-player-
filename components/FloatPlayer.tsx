@@ -1,31 +1,26 @@
 import React from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
-
+import useAudioStore from '@/store/AudioStore';
+import ProgressBar from './ProgressBar';
+import AudioPlayer from './AudioPlayer';
 export  function FloatingPlayer() {
+  const {isPlaying,currentTitle,nextAudio,prevAudio,currentUri}=useAudioStore();
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.trackInfo}>
           <Text style={styles.title}>Currently Playing</Text>
-          <Text style={styles.artist}>Artist Name</Text>
+          <Text style={styles.artist}>{currentTitle}</Text>
         </View>
         
         <View style={styles.controls}>
-          <Pressable style={styles.controlButton}>
-            <Text style={styles.controlIcon}>⏮</Text>
-          </Pressable>
-          <Pressable style={[styles.controlButton, styles.playButton]}>
-            <Text style={[styles.controlIcon, styles.playIcon]}>▶</Text>
-          </Pressable>
-          <Pressable style={styles.controlButton}>
-            <Text style={styles.controlIcon}>⏭</Text>
-          </Pressable>
+        
+        <AudioPlayer uri={currentUri} currentTitle={currentTitle} isInDetail={false} />
+         
         </View>
       </View>
       
-      <View style={styles.progressBar}>
-        <View style={styles.progress} />
-      </View>
+      <ProgressBar  />
     </View>
   );
 }

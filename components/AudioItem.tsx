@@ -45,7 +45,6 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
       },
     });*/
     router.push(`/(details)/${item.id}`);
-    alert("Playing "+item.filename);
 
    /* if (currentUri !== uri) {
             if (isPlaying) {

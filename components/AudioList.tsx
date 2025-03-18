@@ -20,16 +20,19 @@ import AudioItem from './AudioItem';
 import useAudioStore from '@/store/AudioStore';
 import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
+import { FloatingPlayer } from './FloatPlayer';
 
 export const AudioListScreen = () => {
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
-  const { setDefaultPlaylist, defaultPlaylist, togglePlaylistMode } = useAudioStore();
+  const { setDefaultPlaylist, defaultPlaylist, togglePlaylistMode,setIsPlayingInTheDetail,isPlaying,currentUri ,isPlayingInTheDetail} = useAudioStore();
   const router = useRouter();
 
   useEffect(() => {
     requestPermission();
+    
     fetchAudioFiles().then(setDefaultPlaylist);
-  }, []);
+    setIsPlayingInTheDetail(false);
+  }, [isPlayingInTheDetail]);
 
   const requestPermission = async () => {
     if (Platform.OS === 'web') {
@@ -142,6 +145,7 @@ export const AudioListScreen = () => {
           <BackgroundAudioPlayer />
         </LinearGradient>
       </ImageBackground>
+      {currentUri && <FloatingPlayer />}
     </SafeAreaView>
   );
 };

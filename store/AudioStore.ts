@@ -17,6 +17,8 @@ interface AudioState {
   prevAudioId: string | null;
   positionMillis:number;
   durationMillis:number;
+  isPlayingInTheDetail:boolean;
+  setIsPlayingInTheDetail:(isPlayingInTheDetail:boolean)=>void;
   setDefaultPlaylist: (tracks: MediaLibrary.Asset[]) => void;
   setCustomPlaylist: (tracks: MediaLibrary.Asset[]) => void;
   togglePlaylistMode: (mode:boolean) => void;
@@ -42,6 +44,8 @@ const useAudioStore = create<AudioState>((set, get) => ({
   prevAudioId:null,
   durationMillis:0,
   positionMillis:0,
+  isPlayingInTheDetail:true,
+  setIsPlayingInTheDetail:(isPlayingInTheDetail:boolean)=>set({isPlayingInTheDetail}),
   
   setDefaultPlaylist: (tracks) => {
     set({ defaultPlaylist: tracks });
@@ -129,7 +133,7 @@ const useAudioStore = create<AudioState>((set, get) => ({
   },
 
   nextAudio: async () => {
-    const { isCustomMode, customPlaylist, defaultPlaylist, currentIndex } = get();
+    const { isCustomMode, customPlaylist, defaultPlaylist, currentIndex ,isPlayingInTheDetail} = get();
     const playlist = isCustomMode ? customPlaylist : defaultPlaylist;
 
     if (playlist.length === 0 || currentIndex === null) return;
@@ -143,12 +147,14 @@ const useAudioStore = create<AudioState>((set, get) => ({
     set({ currentIndex: nextIndex ,nextAudioId:nextTrack.id});
   
     await get().playAudio();
-    router.replace(`/(details)/${nextTrack.id}`);
+     if(isPlayingInTheDetail){
+      router.replace(`/(details)/${nextTrack.id}`);
+    }
     return nextTrack.id;
   },
 
   prevAudio: async () => {
-    const { isCustomMode, customPlaylist, defaultPlaylist, currentIndex } = get();
+    const { isCustomMode, customPlaylist, defaultPlaylist, currentIndex,isPlayingInTheDetail } = get();
     const playlist = isCustomMode ? customPlaylist : defaultPlaylist;
 
     if (playlist.length === 0 || currentIndex === null) return;
@@ -164,7 +170,9 @@ const useAudioStore = create<AudioState>((set, get) => ({
     });
    
     await get().playAudio();
-    router.replace(`/(details)/${prevTrack.id}`);
+    if(isPlayingInTheDetail){
+      router.replace(`/(details)/${prevTrack.id}`);
+    }
     return prevTrack.id
   },
   seekAudio: async (positionMillis:number) =>{

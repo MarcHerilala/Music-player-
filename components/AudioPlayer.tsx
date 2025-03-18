@@ -8,18 +8,22 @@ import { THEME_COLOR_LIGHT } from '@/helpers/BaseColor';
 interface AudioPlayerProps {
     uri: string;
     currentTitle: string;
+    isInDetail: boolean;
 }
 
-const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
+const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle,isInDetail}) => {
     const { currentUri, sound, isPlaying, loadAudio, playAudio, pauseAudio } = useAudioStore();
 
     useEffect(() => {
         const autoPlay = async () => {
             await loadAudio(uri, currentTitle);
-            await playAudio(); // 🔥 Auto-play après chargement
+            await playAudio(); 
+            
             updateNotification(currentTitle, true);
         };
-        autoPlay();
+       if(isInDetail){
+           autoPlay();
+       }
     }, [uri, currentTitle]);
 
     const handlePlayPause = async () => {
