@@ -28,12 +28,12 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
   const router = useRouter();
   const {currentUri, sound, isPlaying, loadAudio, playAudio, pauseAudio } = useAudioStore();
 
-   useEffect(() => {
+   /*useEffect(() => {
           loadAudio(uri, currentTitle);
-      }, [uri, currentTitle]);
+      }, [uri, currentTitle]);*/
 
   const handlePress = async () => {
-    router.push({
+   /* router.push({
       pathname: "/(details)/[slug]",
       params: {
         slug: item.id,
@@ -43,9 +43,11 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
           uri: item.uri,
         }),
       },
-    });
+    });*/
+    router.push(`/(details)/${item.id}`);
+    alert("Playing "+item.filename);
 
-    if (currentUri !== uri) {
+   /* if (currentUri !== uri) {
             if (isPlaying) {
                 
             }
@@ -60,7 +62,7 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
                 await playAudio();
                 updateNotification(currentTitle, true);
             }
-        }
+        }*/
   };
 
   const handleDelete = () => {
@@ -87,11 +89,10 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
   };
 
   return (
-    <ContentWrapper
-      {...animationProps}
-      style={styles.audioItem}
+    <View
+      
     >
-      <TouchableOpacity onPress={handlePress} style={styles.touchable}>
+      <TouchableOpacity onPress={handlePress} style={[styles.touchable,styles.audioItem ]}>
         <LinearGradient
           colors={['rgba(17, 24, 39, 0.95)', 'rgba(17, 24, 39, 0.85)']}
           start={{ x: 0, y: 0 }}
@@ -138,7 +139,7 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }:
           </View>
         </LinearGradient>
       </TouchableOpacity>
-    </ContentWrapper>
+    </View>
   );
 };
 

@@ -57,6 +57,7 @@ export default function AudioDetailsScreen() {
   };
 
   const handleStop = () => {
+  
     stopAudio();
   };
 
