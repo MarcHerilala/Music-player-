@@ -46,7 +46,7 @@ export const AudioListScreen = () => {
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
-    <AudioItem index={index} item={item} />
+    <AudioItem index={index} item={item} uri={item.uri} currentTitle={item.filename} />
   );
 
   const renderEmptyState = () => (

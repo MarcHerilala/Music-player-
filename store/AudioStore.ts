@@ -42,7 +42,7 @@ const useAudioStore = create<AudioState>((set, get) => ({
   prevAudioId:null,
   durationMillis:0,
   positionMillis:0,
-
+  
   setDefaultPlaylist: (tracks) => {
     set({ defaultPlaylist: tracks });
     if (!get().isCustomMode) set({ currentIndex: 0 });
@@ -75,10 +75,9 @@ const useAudioStore = create<AudioState>((set, get) => ({
     if (uri !== currentUri) {
       const { sound: newSound } = await Audio.Sound.createAsync(
         { uri },
-        { shouldPlay: false },
-       
+        { shouldPlay: false }
       );
-       newSound.setOnPlaybackStatusUpdate(async (status) => {
+      newSound.setOnPlaybackStatusUpdate(async (status) => {
         if(status.isLoaded){
             if (status.didJustFinish && !status.isLooping) {
             await get().nextAudio();

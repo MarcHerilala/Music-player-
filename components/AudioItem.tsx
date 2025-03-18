@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Image, Dimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import AudioPlayer from './AudioPlayer';
@@ -7,6 +7,8 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInRight } from 'react-native-reanimated';
 import { THEME_COLOR,THEME_COLOR_LIGHT } from '@/helpers/BaseColor';
+import useAudioStore from '@/store/AudioStore';
+import { updateNotification } from '@/services/NotificationService';
 
 const { width } = Dimensions.get('window');
 
@@ -18,12 +20,19 @@ type AudioItemProps = {
   index: number;
   isItInPlayList?: boolean;
   onDelete?: (id: string) => void;
+  uri: string;
+  currentTitle: string;
 };
 
-const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) => {
+const AudioItem = ({ item, index, isItInPlayList, onDelete, uri, currentTitle }: AudioItemProps) => {
   const router = useRouter();
+  const {currentUri, sound, isPlaying, loadAudio, playAudio, pauseAudio } = useAudioStore();
 
-  const handlePress = () => {
+   useEffect(() => {
+          loadAudio(uri, currentTitle);
+      }, [uri, currentTitle]);
+
+  const handlePress = async () => {
     router.push({
       pathname: "/(details)/[slug]",
       params: {
@@ -35,6 +44,23 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) =>
         }),
       },
     });
+
+    if (currentUri !== uri) {
+            if (isPlaying) {
+                
+            }
+            await loadAudio(uri, currentTitle);
+            await playAudio(); 
+            updateNotification(currentTitle, true)
+        } else {
+            if (isPlaying){
+                await pauseAudio();
+                updateNotification(currentTitle, false);
+            } else {
+                await playAudio();
+                updateNotification(currentTitle, true);
+            }
+        }
   };
 
   const handleDelete = () => {
@@ -93,7 +119,6 @@ const AudioItem = ({ item, index, isItInPlayList, onDelete }: AudioItemProps) =>
             </View>
             
             <View style={styles.controlsContainer}>
-              <AudioPlayer uri={item.uri} currentTitle={item.filename} />
               
               {isItInPlayList && (
                 <TouchableOpacity
