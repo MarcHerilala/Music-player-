@@ -5,6 +5,7 @@ import * as MediaLibrary from "expo-media-library";
 import { router, useLocalSearchParams } from "expo-router";
 import usePlaylistStore from "@/store/PlayListStore";
 import Icon from "react-native-vector-icons/FontAwesome6";
+import { THEME_COLOR, THEME_COLOR_LIGHT } from "@/helpers/BaseColor";
 
 
 export default function MusicList() {
@@ -55,7 +56,7 @@ export default function MusicList() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.title}>Your Music</Text>
+        <Text style={styles.title}>Your Musics</Text>
         {selectedTracks.size > 0 && (
           <Pressable style={styles.addButton} onPress={addToPlaylist}>
             <Icon name="plus" color="#fff" size={24} />
@@ -75,7 +76,7 @@ export default function MusicList() {
           >
             <View style={styles.trackInfo}>
               <View style={styles.iconContainer}>
-                <Icon name="music" size={24} color="#6366f1" />
+                <Icon name="music" size={24} color="#ffffff" />
               </View>
               <View style={styles.textContainer}>
                 <Text style={styles.trackName} numberOfLines={1}>
@@ -91,7 +92,7 @@ export default function MusicList() {
               selectedTracks.has(file.uri) && styles.checkboxSelected
             ]}>
               {selectedTracks.has(file.uri) && (
-                <Icon name="checkcircle" size={24} color="#6366f1" />
+                <Icon name="checkcircle" size={24} color="#8B1A05" />
               )}
             </View>
           </Pressable>
@@ -104,26 +105,26 @@ export default function MusicList() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8fafc",
+    backgroundColor: "#111827",
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: 'rgba(17, 24, 39, 0.7)',
     borderBottomWidth: 1,
     borderBottomColor: "#e2e8f0",
   },
   title: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1e293b",
+    color: '#F9FAFB',
   },
   addButton: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#6366f1",
+    backgroundColor: "#8B1A05",
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 8,
@@ -141,18 +142,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
     padding: 16,
-    backgroundColor: "#fff",
+    backgroundColor: "#111827",
     marginHorizontal: 16,
     marginTop: 12,
     borderRadius: 12,
-    shadowColor: "#000",
+    shadowColor: THEME_COLOR,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 8,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: THEME_COLOR_LIGHT,
   },
   trackInfo: {
     flex: 1,
@@ -163,7 +166,7 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 48,
     height: 48,
-    backgroundColor: "#f1f5f9",
+    backgroundColor: "#8B1A05",
     borderRadius: 24,
     alignItems: "center",
     justifyContent: "center",
@@ -174,7 +177,7 @@ const styles = StyleSheet.create({
   trackName: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#1e293b",
+    color: "#ffffff",
   },
   duration: {
     fontSize: 14,
@@ -192,6 +195,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   checkboxSelected: {
-    borderColor: "#6366f1",
+    borderColor: "#8B1A05",
   },
 });

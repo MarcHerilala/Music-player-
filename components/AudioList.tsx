@@ -118,13 +118,7 @@ export const AudioListScreen = () => {
           style={styles.gradient}
         >
           <BlurView intensity={80} tint="dark" style={styles.header}>
-            <Text style={styles.title}>Your Music</Text>
-            <View style={styles.statsContainer}>
-              <Icon name="headphones" size={16} color="#FF6600" />
-              <Text style={styles.subtitle}>
-                {defaultPlaylist.length} tracks in library
-              </Text>
-            </View>
+            <Text style={styles.title}>Your Musics</Text>
           </BlurView>
 
           {permissionStatus === 'denied' && renderPermissionDenied()}
