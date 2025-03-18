@@ -125,7 +125,7 @@ export const AudioListScreen = () => {
             <View style={styles.statsContainer}>
               <Icon name="headphones" size={16} color="#FF6600" />
               <Text style={styles.subtitle}>
-                {defaultPlaylist.length} tracks in library
+                 tracks
               </Text>
             </View>
           </BlurView>
