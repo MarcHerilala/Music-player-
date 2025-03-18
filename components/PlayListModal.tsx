@@ -80,7 +80,7 @@ export const PlayListCreateModal = () => {
 
 const styles = StyleSheet.create({
   addButton: {
-    backgroundColor: '#6366f1',
+    backgroundColor: '#8B1A05',
     width: 40,
     height: 40,
     borderRadius: 20,

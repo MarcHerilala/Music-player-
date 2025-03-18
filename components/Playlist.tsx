@@ -4,6 +4,7 @@ import { PlayListCreateModal } from './PlayListModal';
 import usePlaylistStore from '@/store/PlayListStore';
 import { useRouter } from 'expo-router';
 import Icon from    'react-native-vector-icons/FontAwesome6';
+import { THEME_COLOR } from '@/helpers/BaseColor';
 
 export const PlaylistScreen = () => {
   const { loadPlaylists, playlists, deletePlayList } = usePlaylistStore();
@@ -37,7 +38,7 @@ export const PlaylistScreen = () => {
       onPress={() => router.push(`/playlist/track/${item.id}/list`)}
     >
       <View style={styles.playlistIconContainer}>
-        <Icon name='music' size={24} color="#6366f1" />
+        <Icon name='music' size={24} color="#8B1A05" />
       </View>
       <View style={styles.playlistInfo}>
         <Text style={styles.playlistName}>{item.name}</Text>
@@ -74,7 +75,7 @@ export const PlaylistScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#111827',
     paddingTop: 16,
   },
   header: {
@@ -87,7 +88,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: '700',
-    color: '#1e293b',
+    color: '#ffffff',
   },
   listContainer: {
     padding: 16,
@@ -95,18 +96,19 @@ const styles = StyleSheet.create({
   playlistItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#ffffff',
+    backgroundColor: '#111827',
     padding: 16,
-    borderRadius: 12,
     marginBottom: 12,
-    shadowColor: '#000',
+    borderRadius: 20,
+    overflow: 'hidden',
+    shadowColor: THEME_COLOR,
     shadowOffset: {
       width: 0,
-      height: 2,
+      height: 8,
     },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 3,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
   playlistIconContainer: {
     width: 48,
@@ -123,7 +125,7 @@ const styles = StyleSheet.create({
   playlistName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#1e293b',
+    color: '#ffffff',
   },
   trackCount: {
     fontSize: 14,
