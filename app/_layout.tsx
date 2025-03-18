@@ -1,90 +1,83 @@
 import { useEffect, useState } from "react";
-import { View, Image, StyleSheet, Animated } from "react-native";
+import { View, Image, Animated } from "react-native";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import * as SplashScreen from "expo-splash-screen";
-
-SplashScreen.preventAutoHideAsync();
+import { useFonts } from 'expo-font';
 
 export default function RootLayout() {
-  const [isReady, setIsReady] = useState(false);
-  const fadeAnim = new Animated.Value(1); 
-  const rotateAnim = new Animated.Value(0);
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  const [rotate] = useState(new Animated.Value(0));
+  const [isSplashVisible, setIsSplashVisible] = useState(true);
 
   useEffect(() => {
-    const prepareApp = async () => {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 2000));
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        Animated.parallel([
-          Animated.timing(fadeAnim, {
-            toValue: 0,
-            duration: 1000, 
-            useNativeDriver: true,
-          }),
-          Animated.timing(rotateAnim, {
-            toValue: 1, 
-            duration: 1000, 
-            useNativeDriver: true,
-          }),
-        ]).start(() => {
-          setIsReady(true);
-          SplashScreen.hideAsync();
-        });
-      }
-    };
+    if (loaded) {
+      
+      Animated.loop(
+        Animated.timing(rotate, {
+          toValue: 1,
+          duration: 2000,
+          useNativeDriver: true,
+        })
+      ).start();
 
-    prepareApp();
-  }, []);
+      
+      setTimeout(() => {
+        setIsSplashVisible(false);
+      }, 2500);
+    }
+  }, [loaded]);
 
-  const rotate = rotateAnim.interpolate({
+  if (!loaded) return null;
+
+  const rotateInterpolated = rotate.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"], 
+    outputRange: ['0deg', '360deg'],
   });
 
   return (
     <>
-      {/* Animation du splash screen */}
-      {!isReady && (
-        <Animated.View style={[styles.splashContainer, { opacity: fadeAnim }]}>
-          <Animated.Image
+      {isSplashVisible ? (
+        <View
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "#ffffff",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Animated.Image 
             source={require("../assets/images/music-player-icon.png")}
-            style={[styles.logo, { transform: [{ rotate }] }]}
+            style={{
+              width: 200,
+              height: 200,
+              transform: [{ rotate: rotateInterpolated }],
+            }} 
           />
-        </Animated.View>
+        </View>
+      ) : (
+        <>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
+            <Stack.Screen 
+              name="(details)" 
+              options={{
+                headerShown: true,
+                headerTitle: "Details",
+                presentation: "card",
+              }} 
+            />
+            <Stack.Screen name="+not-found" />
+          </Stack>
+          <StatusBar style="auto" />
+        </>
       )}
-
-      {/* L'application normale */}
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(drawer)" options={{ headerShown: false }} />
-        <Stack.Screen 
-          name="(details)" 
-          options={{
-            headerShown: true,
-            headerTitle: "Details",
-            presentation: "card",
-          }} 
-        />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-
-      <StatusBar style="auto" />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  splashContainer: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "#ffffff",
-    justifyContent: "center",
-    alignItems: "center",
-    zIndex: 2,
-  },
-  logo: {
-    width: 150,
-    height: 150,
-  },
-});

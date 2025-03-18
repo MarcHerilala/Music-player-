@@ -28,6 +28,7 @@ export const AudioListScreen = () => {
 
   useEffect(() => {
     requestPermission();
+    fetchAudioFiles().then(setDefaultPlaylist);
   }, []);
 
   const requestPermission = async () => {
@@ -38,8 +39,7 @@ export const AudioListScreen = () => {
 
     const { status } = await MediaLibrary.requestPermissionsAsync();
     setPermissionStatus(status);
-    const playlist = await fetchAudioFiles();
-    setDefaultPlaylist(playlist);
+  
     setTimeout(() => {
       togglePlaylistMode(false);
     }, 100);

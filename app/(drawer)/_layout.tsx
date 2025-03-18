@@ -7,7 +7,7 @@ export default function Layout() {
        drawerStyle: {
       backgroundColor: '#111827', 
     },
-    drawerActiveTintColor: '#8B5CF6', 
+    drawerActiveTintColor: '#FF4500', 
     drawerInactiveTintColor: '#D1D5DB', 
     drawerLabelStyle: {
       fontWeight: 'bold', 
