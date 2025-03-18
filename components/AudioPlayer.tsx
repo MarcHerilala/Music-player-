@@ -3,6 +3,9 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import useAudioStore from '@/store/AudioStore';
 import { updateNotification } from "@/services/NotificationService";
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { THEME_COLOR,THEME_COLOR_LIGHT } from '@/helpers/BaseColor';
+
+
 
 
 interface AudioPlayerProps {
@@ -40,7 +43,7 @@ const AudioPlayer: React.FC<AudioPlayerProps> = ({ uri, currentTitle }) => {
     return (
         <View style={styles.container}>
             <TouchableOpacity onPress={handlePlayPause} style={styles.button} disabled={!sound}>
-                {isPlaying &&currentUri==uri? <Icon name="pause" size={32} color="#6366f1" /> : <Icon name="play" size={32} color="#6366f1" />}
+                {isPlaying &&currentUri==uri? <Icon name="pause" size={32} color={THEME_COLOR_LIGHT} /> : <Icon name="play" size={32} color={THEME_COLOR_LIGHT} />}
             </TouchableOpacity>
         </View>
     );

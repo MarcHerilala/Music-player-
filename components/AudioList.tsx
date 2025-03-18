@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
   Platform,
+  ImageBackground,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as MediaLibrary from 'expo-media-library';
@@ -17,11 +18,14 @@ import Icon from 'react-native-vector-icons/FontAwesome6';
 const { width } = Dimensions.get('window');
 import AudioItem from './AudioItem';
 import useAudioStore from '@/store/AudioStore';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
 
 export const AudioListScreen = () => {
   const [permissionStatus, setPermissionStatus] = useState<MediaLibrary.PermissionStatus | 'web' | null>(null);
-  const {setDefaultPlaylist,defaultPlaylist,togglePlaylistMode}=useAudioStore()
-;  const router=useRouter();
+  const { setDefaultPlaylist, defaultPlaylist, togglePlaylistMode } = useAudioStore();
+  const router = useRouter();
+
   useEffect(() => {
     requestPermission();
   }, []);
@@ -34,82 +38,110 @@ export const AudioListScreen = () => {
 
     const { status } = await MediaLibrary.requestPermissionsAsync();
     setPermissionStatus(status);
-       // Récupérer les fichiers audio AVANT de changer le mode
-  const playlist = await fetchAudioFiles();
-
-  setDefaultPlaylist(playlist);
-    // Attendre un petit délai pour garantir la mise à jour
-  setTimeout(() => {
-    togglePlaylistMode(false);
-  }, 100); // Attente courte pour éviter un appel trop tôt
-      
-      
-    
+    const playlist = await fetchAudioFiles();
+    setDefaultPlaylist(playlist);
+    setTimeout(() => {
+      togglePlaylistMode(false);
+    }, 100);
   };
 
   const renderAudioItem = ({ item, index }: { item: MediaLibrary.Asset; index: number }) => (
-   <AudioItem index={index} item={item}/>
+    <AudioItem index={index} item={item} />
   );
 
   const renderEmptyState = () => (
     <View style={styles.emptyState}>
-      { <Icon name='music' size={64} color="#6366f1" style={styles.emptyIcon} />}
-      <Text style={styles.emptyText}>No audio files found</Text>
-      <Text style={styles.emptySubtext}>
-        Add some audio files to your device to see them here
-      </Text>
+      <LinearGradient
+        colors={['rgba(255, 102, 0, 0.1)', 'rgba(255, 102, 0, 0.05)']}
+        style={styles.emptyStateGradient}
+      >
+        <Icon name="music" size={64} color="#FF6600" style={styles.emptyIcon} />
+        <Text style={styles.emptyText}>Your Library Awaits</Text>
+        <Text style={styles.emptySubtext}>
+          Add your favorite tracks and let the music flow
+        </Text>
+      </LinearGradient>
     </View>
   );
 
   const renderPermissionDenied = () => (
     <View style={styles.emptyState}>
-      <Icon name="alert-circle" size={64} color="#ef4444" style={styles.emptyIcon} />
-      <Text style={styles.emptyText}>Permission Required</Text>
-      <Text style={styles.emptySubtext}>
-        We need access to your audio files to display them here
-      </Text>
-      <TouchableOpacity
-        style={styles.permissionButton}
-        onPress={requestPermission}
+      <LinearGradient
+        colors={['rgba(239, 68, 68, 0.1)', 'rgba(239, 68, 68, 0.05)']}
+        style={styles.emptyStateGradient}
       >
-        <Text style={styles.permissionButtonText}>Grant Permission</Text>
-      </TouchableOpacity>
+        <Icon name="triangle-exclamation" size={64} color="#EF4444" style={styles.emptyIcon} />
+        <Text style={styles.emptyText}>Permission Needed</Text>
+        <Text style={styles.emptySubtext}>
+          Let's unlock your music collection together
+        </Text>
+        <TouchableOpacity
+          style={styles.permissionButton}
+          onPress={requestPermission}
+        >
+          <LinearGradient
+            colors={['#FF6600', '#FF4500']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.permissionButtonGradient}
+          >
+            <Text style={styles.permissionButtonText}>Grant Access</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+      </LinearGradient>
     </View>
   );
 
   const renderWebPlatformMessage = () => (
     <View style={styles.emptyState}>
-      <Icon name="alert-circle" size={64} color="#ef4444" style={styles.emptyIcon} />
-      <Text style={styles.emptyText}>Web Platform</Text>
-      <Text style={styles.emptySubtext}>
-        Audio file listing is not supported in web browsers
-      </Text>
+      <LinearGradient
+        colors={['rgba(239, 68, 68, 0.1)', 'rgba(239, 68, 68, 0.05)']}
+        style={styles.emptyStateGradient}
+      >
+        <Icon name="globe" size={64} color="#EF4444" style={styles.emptyIcon} />
+        <Text style={styles.emptyText}>Web Playback</Text>
+        <Text style={styles.emptySubtext}>
+          Experience the full features on our mobile app
+        </Text>
+      </LinearGradient>
     </View>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Audio Library</Text>
-          <Text style={styles.subtitle}>
-            {defaultPlaylist.length} audio files found
-          </Text>
-      </View>
+      <ImageBackground
+        source={{ uri: 'https://images.unsplash.com/photo-1470225620780-dba8ba36b745?q=80&w=2070&auto=format&fit=crop' }}
+        style={styles.backgroundImage}
+      >
+        <LinearGradient
+          colors={['rgba(17, 24, 39, 0.95)', 'rgba(17, 24, 39, 0.85)']}
+          style={styles.gradient}
+        >
+          <BlurView intensity={80} tint="dark" style={styles.header}>
+            <Text style={styles.title}>Your Music</Text>
+            <View style={styles.statsContainer}>
+              <Icon name="headphones" size={16} color="#FF6600" />
+              <Text style={styles.subtitle}>
+                {defaultPlaylist.length} tracks in library
+              </Text>
+            </View>
+          </BlurView>
 
-      {permissionStatus === 'denied' && renderPermissionDenied()}
-      {permissionStatus === 'web' && renderWebPlatformMessage()}
-      
-        <FlatList
-          data={defaultPlaylist}
-          keyExtractor={(item) => item.id}
-          renderItem={renderAudioItem}
-          ListEmptyComponent={renderEmptyState}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-        />
-    
+          {permissionStatus === 'denied' && renderPermissionDenied()}
+          {permissionStatus === 'web' && renderWebPlatformMessage()}
+          
+          <FlatList
+            data={defaultPlaylist}
+            keyExtractor={(item) => item.id}
+            renderItem={renderAudioItem}
+            ListEmptyComponent={renderEmptyState}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+          />
 
-      <BackgroundAudioPlayer />
+          <BackgroundAudioPlayer />
+        </LinearGradient>
+      </ImageBackground>
     </SafeAreaView>
   );
 };
@@ -117,65 +149,52 @@ export const AudioListScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8fafc',
+    backgroundColor: '#111827',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+  },
+  gradient: {
+    flex: 1,
   },
   header: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(17, 24, 39, 0.7)',
     borderBottomWidth: 1,
-    borderBottomColor: '#e2e8f0',
+    borderBottomColor: 'rgba(75, 85, 99, 0.3)',
+    overflow: 'hidden',
   },
   title: {
-    fontSize: 28,
+    fontSize: 34,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#F9FAFB',
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
+  },
+  statsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 12,
+    backgroundColor: 'rgba(17, 24, 39, 0.6)',
+    padding: 10,
+    paddingHorizontal: 16,
+    borderRadius: 24,
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 102, 0, 0.3)',
   },
   subtitle: {
     fontSize: 14,
-    color: '#64748b',
-    marginTop: 4,
+    color: '#D1D5DB',
+    marginLeft: 10,
+    letterSpacing: 0.3,
   },
   listContent: {
     padding: 16,
     paddingBottom: 100,
-  },
-  audioItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.05,
-    shadowRadius: 3.84,
-    elevation: 2,
-  },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#eef2ff',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  audioInfo: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  fileName: {
-    fontSize: 16,
-    color: '#1e293b',
-    fontWeight: '500',
-  },
-  duration: {
-    fontSize: 14,
-    color: '#64748b',
-    marginTop: 2,
   },
   emptyState: {
     flex: 1,
@@ -183,33 +202,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
   },
+  emptyStateGradient: {
+    padding: 32,
+    borderRadius: 24,
+    alignItems: 'center',
+    width: '100%',
+    maxWidth: 400,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 102, 0, 0.2)',
+  },
   emptyIcon: {
-    marginBottom: 16,
+    marginBottom: 20,
+    opacity: 0.9,
   },
   emptyText: {
-    fontSize: 20,
+    fontSize: 28,
     fontWeight: 'bold',
-    color: '#1e293b',
+    color: '#F9FAFB',
     textAlign: 'center',
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 2 },
+    textShadowRadius: 4,
   },
   emptySubtext: {
     fontSize: 16,
-    color: '#64748b',
+    color: '#D1D5DB',
     textAlign: 'center',
-    marginTop: 8,
+    marginTop: 12,
     maxWidth: width * 0.8,
+    lineHeight: 24,
+    letterSpacing: 0.3,
   },
   permissionButton: {
-    marginTop: 24,
-    backgroundColor: '#6366f1',
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
+    marginTop: 32,
+    overflow: 'hidden',
+    borderRadius: 16,
+    elevation: 8,
+    shadowColor: '#FF6600',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+  },
+  permissionButtonGradient: {
+    paddingHorizontal: 32,
+    paddingVertical: 16,
   },
   permissionButtonText: {
-    color: '#fff',
+    color: '#F9FAFB',
     fontSize: 16,
-    fontWeight: '500',
+    fontWeight: '600',
+    letterSpacing: 1,
+    textAlign: 'center',
   },
 });
-

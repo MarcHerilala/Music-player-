@@ -2,16 +2,15 @@ import * as MediaLibrary from 'expo-media-library';
 import MusicInfo from 'expo-music-info-2';
 
 
-export const fetchAudioFiles = async () => {
-    const media = await MediaLibrary.getAssetsAsync({
-      mediaType: MediaLibrary.MediaType.audio,
-      first: 10,
+export const fetchAudioFiles = async (limit = 999, offset = 0) => {
+  const media = await MediaLibrary.getAssetsAsync({
+    mediaType: MediaLibrary.MediaType.audio,
+    first: limit,
+    after: offset > 0 ? (await MediaLibrary.getAssetsAsync({ first: offset })).assets[offset - 1] : undefined,
+  });
+  return media.assets;
+};
 
-      
-    });
-
-    return media.assets
-  };
 
 export const getAudioById = async (id: string) => {
   const audioFiles = await fetchAudioFiles();
