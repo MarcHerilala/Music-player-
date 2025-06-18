@@ -16,6 +16,7 @@ export default function PlaylistDetail() {
   const playListId=Array.isArray(id)?id[0]:id
   useEffect(() => {
     
+    
     if(customPlaylist.length>0){
       setCustomPlaylist([])
     }
